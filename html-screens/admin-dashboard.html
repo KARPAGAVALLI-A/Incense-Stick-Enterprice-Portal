@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Enterprise Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4f5f7;
+      --card-bg: #ffffff;
+      --border: #e5e7eb;
+      --text: #111827;
+      --text-muted: #6b7280;
+      --row-border: #f3f4f6;
+    }
+    [data-theme="dark"] {
+      --bg: #0b1220;
+      --card-bg: #131b2c;
+      --border: #26324a;
+      --text: #e5e7eb;
+      --text-muted: #94a3b8;
+      --row-border: #1e293b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { display: flex; min-height: 100vh; background: var(--bg); color: var(--text); }
+    
+    /* Sidebar */
+    .sidebar { width: 240px; background: #0f172a; color: #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; flex-shrink: 0; }
+    .brand { display: flex; gap: 10px; align-items: center; margin-bottom: 24px; }
+    .brand-logo { width: 36px; height: 36px; border-radius: 8px; background: #2563eb; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; }
+    .brand-name { font-weight: 700; font-size: 14px; }
+    .brand-sub { font-size: 11px; color: #94a3b8; }
+    
+    .nav-link { display: flex; gap: 10px; align-items: center; width: 100%; color: #cbd5e1; padding: 10px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 4px; text-decoration: none; transition: background 0.2s; }
+    .nav-link.active { background: #2563eb; color: #fff; font-weight: 600; }
+    .nav-link:hover:not(.active) { background: #1e293b; }
+
+    .profile { display: flex; gap: 10px; align-items: center; background: #1e293b; padding: 10px; border-radius: 10px; margin-top: 20px; }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; background: #334155; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+    .profile-name { font-size: 13px; font-weight: 600; }
+    .profile-role { font-size: 11px; color: #94a3b8; }
+    
+    .theme-toggle { width: 100%; margin-top: 14px; background: #1e293b; border: 1px solid #334155; color: #e2e8f0; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; text-align: left; }
+
+    /* Content Area */
+    .content { flex: 1; padding: 32px; overflow-y: auto; }
+    .eyebrow { font-size: 12px; font-weight: 600; color: #2563eb; text-transform: uppercase; letter-spacing: 0.5px; }
+    .page-title { font-size: 24px; font-weight: 700; margin: 4px 0 20px; color: var(--text); }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+    .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .stat-label { font-size: 12px; color: var(--text-muted); }
+    .stat-val { font-size: 26px; font-weight: 700; margin: 6px 0; }
+    .stat-sub { font-size: 12px; color: var(--text-muted); }
+
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .section-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; color: var(--text); }
+
+    .table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    .table th { background: #111827; color: #fff; text-align: left; font-size: 11px; padding: 10px 12px; text-transform: uppercase; }
+    .table td { padding: 12px; font-size: 13px; border-bottom: 1px solid var(--row-border); color: var(--text); }
+    
+    .pill { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 999px; display: inline-block; }
+    .pill-green { background: #dcfce7; color: #166534; }
+    .pill-blue { background: #dbeafe; color: #1e40af; }
+    .pill-yellow { background: #fef3c7; color: #92400e; }
+
+    .progress-track { height: 6px; background: var(--row-border); border-radius: 999px; overflow: hidden; width: 100px; }
+    .progress-fill { height: 100%; background: #2563eb; border-radius: 999px; }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div>
+      <div class="brand">
+        <div class="brand-logo">⚡</div>
+        <div>
+          <div class="brand-name">ISE Console</div>
+          <div class="brand-sub">Enterprise Systems</div>
+        </div>
+      </div>
+
+      <nav>
+        <a href="admin-dashboard.html" class="nav-link active">📊 Dashboard</a>
+        <a href="inventory.html" class="nav-link">📦 Inventory</a>
+        <a href="production.html" class="nav-link">⚙️ Production</a>
+        <a href="logistics.html" class="nav-link">🚚 Logistics</a>
+        <a href="employees.html" class="nav-link">👥 Employees</a>
+        <a href="reports.html" class="nav-link">📈 Reports</a>
+        <a href="settings.html" class="nav-link">🛠️ Settings</a>
+      </nav>
+    </div>
+
+    <div>
+      <div class="profile">
+        <div class="avatar">SC</div>
+        <div>
+          <div class="profile-name">Sarah Connor</div>
+          <div class="profile-role">Admin (Full Access)</div>
+        </div>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()">🌓 Toggle Light / Dark</button>
+      <a href="login.html" class="nav-link" style="color: #f87171; margin-top: 8px;">🚪 Sign Out</a>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <div class="eyebrow">Executive Console</div>
+    <h1 class="page-title">Admin Dashboard</h1>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">Active Batches</div>
+        <div class="stat-val">24 Units</div>
+        <div class="stat-sub">Across 3 Plant Facilities</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Staff On Shift</div>
+        <div class="stat-val">142 Employees</div>
+        <div class="stat-sub">Morning Shift (A)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active Shipments</div>
+        <div class="stat-val">18 Fleet Units</div>
+        <div class="stat-sub">96.2% On-Time Delivery</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Current Production Batches</div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Batch ID</th>
+            <th>Product Name</th>
+            <th>Target Unit</th>
+            <th>Status</th>
+            <th>Progress</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>BATCH-801</strong></td>
+            <td>Micro-Controller Chipset V2</td>
+            <td>Plant Line A1</td>
+            <td><span class="pill pill-blue">In Production</span></td>
+            <td>
+              <div class="progress-track"><div class="progress-fill" style="width: 75%;"></div></div>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>BATCH-802</strong></td>
+            <td>Smart Sensor Telemetry Array</td>
+            <td>Plant Line B2</td>
+            <td><span class="pill pill-green">Completed</span></td>
+            <td>
+              <div class="progress-track"><div class="progress-fill" style="width: 100%; background: #16a34a;"></div></div>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>BATCH-803</strong></td>
+            <td>Industrial Servo Motor H1</td>
+            <td>Plant Line C3</td>
+            <td><span class="pill pill-yellow">Queued</span></td>
+            <td>
+              <div class="progress-track"><div class="progress-fill" style="width: 20%;"></div></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const current = document.body.getAttribute('data-theme');
+      document.body.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    }
+  </script>
+
+</body>
+</html>

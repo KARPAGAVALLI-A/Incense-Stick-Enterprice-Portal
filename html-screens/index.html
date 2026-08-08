@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enterprise Console — HTML Screens Navigator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 40px 20px; min-height: 100vh; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    
+    header { text-align: center; margin-bottom: 50px; }
+    .logo { width: 56px; height: 56px; background: var(--primary); color: #fff; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(37,99,235,0.4); }
+    h1 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; }
+    p { color: var(--text-muted); font-size: 15px; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-decoration: none; color: var(--text); transition: all 0.25s ease; display: flex; flexDirection: column; justify-content: space-between; }
+    .card:hover { transform: translateY(-4px); border-color: var(--primary); box-shadow: 0 12px 30px rgba(0,0,0,0.3); }
+    .role-badge { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; margin-bottom: 12px; }
+    .admin-badge { background: #dbeafe; color: #1e40af; }
+    .manager-badge { background: #fef3c7; color: #92400e; }
+    .employee-badge { background: #dcfce7; color: #166534; }
+    .general-badge { background: #f3e8ff; color: #6b21a8; }
+
+    .card-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; }
+    .card-btn { background: var(--primary); color: #fff; text-align: center; padding: 10px; border-radius: 8px; font-weight: 600; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">⚡</div>
+      <h1>Enterprise Console HTML Screens</h1>
+      <p>Standalone HTML screen designs for Admin, Manager, Employee, and system modules.</p>
+    </header>
+
+    <div class="grid">
+      <!-- Login -->
+      <a href="login.html" class="card">
+        <div>
+          <span class="role-badge general-badge">Authentication</span>
+          <h2 class="card-title">1. Login Screen</h2>
+          <p class="card-desc">Dual-panel login modal with role dropdown (Admin, Manager, Employee) & status indicators.</p>
+        </div>
+        <div class="card-btn">Open login.html →</div>
+      </a>
+
+      <!-- Admin -->
+      <a href="admin-dashboard.html" class="card">
+        <div>
+          <span class="role-badge admin-badge">Role: Admin</span>
+          <h2 class="card-title">2. Admin Dashboard</h2>
+          <p class="card-desc">Full executive console with KPI stat cards, active batches table, and sidebar navigation.</p>
+        </div>
+        <div class="card-btn">Open admin-dashboard.html →</div>
+      </a>
+
+      <!-- Manager -->
+      <a href="manager-dashboard.html" class="card">
+        <div>
+          <span class="role-badge manager-badge">Role: Plant Manager</span>
+          <h2 class="card-title">3. Manager Dashboard</h2>
+          <p class="card-desc">Plant manager control view focusing on line telemetry, batch controls, and inventory risks.</p>
+        </div>
+        <div class="card-btn">Open manager-dashboard.html →</div>
+      </a>
+
+      <!-- Employee -->
+      <a href="employee-dashboard.html" class="card">
+        <div>
+          <span class="role-badge employee-badge">Role: Employee</span>
+          <h2 class="card-title">4. Employee Mobile Portal</h2>
+          <p class="card-desc">Mobile-optimized viewport interface for factory floor techs with shift task checklists.</p>
+        </div>
+        <div class="card-btn">Open employee-dashboard.html →</div>
+      </a>
+
+      <!-- Inventory -->
+      <a href="inventory.html" class="card">
+        <div>
+          <span class="role-badge general-badge">Module</span>
+          <h2 class="card-title">5. Inventory & AI Risk</h2>
+          <p class="card-desc">Warehouse raw materials, stockout predictions, and AI critical reorder alert banner.</p>
+        </div>
+        <div class="card-btn">Open inventory.html →</div>
+      </a>
+
+      <!-- Production -->
+      <a href="production.html" class="card">
+        <div>
+          <span class="role-badge general-badge">Module</span>
+          <h2 class="card-title">6. Production Telemetry</h2>
+          <p class="card-desc">Real-time sensor telemetry, assembly line temperature gauges, and anomaly alerts.</p>
+        </div>
+        <div class="card-btn">Open production.html →</div>
+      </a>
+
+      <!-- Logistics -->
+      <a href="logistics.html" class="card">
+        <div>
+          <span class="role-badge general-badge">Module</span>
+          <h2 class="card-title">7. Logistics & Fleet</h2>
+          <p class="card-desc">Shipment dispatch schedules, carrier tracking, and transit status badges.</p>
+        </div>
+        <div class="card-btn">Open logistics.html →</div>
+      </a>
+
+      <!-- Employees -->
+      <a href="employees.html" class="card">
+        <div>
+          <span class="role-badge general-badge">Module</span>
+          <h2 class="card-title">8. Employees Directory</h2>
+          <p class="card-desc">Staff directory roster, department filters, and shift assignment controls.</p>
+        </div>
+        <div class="card-btn">Open employees.html →</div>
+      </a>
+
+      <!-- Reports -->
+      <a href="reports.html" class="card">
+        <div>
+          <span class="role-badge general-badge">Module</span>
+          <h2 class="card-title">9. Reports & Analytics</h2>
+          <p class="card-desc">Executive performance summary, output trends, and monthly operational statistics.</p>
+        </div>
+        <div class="card-btn">Open reports.html →</div>
+      </a>
+
+      <!-- Settings -->
+      <a href="settings.html" class="card">
+        <div>
+          <span class="role-badge general-badge">Module</span>
+          <h2 class="card-title">10. System Settings</h2>
+          <p class="card-desc">Theme mode switcher (Light/Dark), system preferences, and notification controls.</p>
+        </div>
+        <div class="card-btn">Open settings.html →</div>
+      </a>
+    </div>
+  </div>
+</body>
+</html>

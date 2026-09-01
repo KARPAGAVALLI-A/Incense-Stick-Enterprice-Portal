@@ -1,0 +1,85 @@
+.loader-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #0B1120;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+
+/* Full Background Image from uploaded user asset */
+.loader-bg-image {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center center;
+  background-repeat: no-repeat;
+  filter: blur(2px) brightness(0.65);
+  transform: scale(1.05);
+  animation: bgSubtleZoom 6s ease-out forwards;
+}
+
+@keyframes bgSubtleZoom {
+  0% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* Dark Vignette Overlay for Readability */
+.loader-bg-overlay {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at center, rgba(15, 23, 42, 0.45) 0%, rgba(11, 17, 32, 0.85) 100%);
+  z-index: 1;
+}
+
+/* Center Box */
+.loader-content-box {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: 32px 40px; border-radius: 24px;
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  opacity: 0; transform: translateY(16px) scale(0.95);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.loader-content-box.visible {
+  opacity: 1; transform: translateY(0) scale(1);
+}
+
+.loader-logo-circle {
+  margin-bottom: 18px; filter: drop-shadow(0 10px 25px rgba(37,99,235,0.5));
+  animation: emblemPulse 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes emblemPulse {
+  0% { transform: scale(0.98); filter: drop-shadow(0 10px 20px rgba(37,99,235,0.4)); }
+  100% { transform: scale(1.04); filter: drop-shadow(0 12px 30px rgba(251,191,36,0.6)); }
+}
+
+.loader-brand-name {
+  font-family: 'DM Sans', sans-serif; font-size: 22px; font-weight: 800;
+  color: #FFF; letter-spacing: 2px; text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.loader-brand-sub {
+  font-size: 11px; font-weight: 700; color: #FBBF24; letter-spacing: 1.2px;
+  margin-top: 2px; margin-bottom: 22px; text-transform: uppercase;
+}
+
+.loader-progress-bar {
+  width: 220px; height: 5px; background: rgba(255,255,255,0.15); border-radius: 99px;
+  overflow: hidden; margin-bottom: 12px;
+}
+
+.loader-progress-fill {
+  height: 100%; width: 45%; background: linear-gradient(90deg, #F59E0B, #3B82F6);
+  border-radius: 99px; animation: barSlide 1.2s ease-in-out infinite;
+}
+
+@keyframes barSlide {
+  0% { margin-left: -45%; }
+  100% { margin-left: 100%; }
+}
+
+.loader-caption-text {
+  font-size: 12.5px; font-weight: 600; color: #E2E8F0; letter-spacing: 0.3px;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}

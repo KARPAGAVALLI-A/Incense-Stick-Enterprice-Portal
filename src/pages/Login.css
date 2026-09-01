@@ -1,0 +1,113 @@
+.login-page { min-height: 100vh; display: flex; background: var(--bg, #F8FAFC); }
+
+.brand-panel { flex: 1.05; background: linear-gradient(160deg, #0F172A 0%, #1E293B 100%); position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: 48px 56px; overflow: hidden; color: #fff; }
+.brand-panel::before { content: ''; position: absolute; top: -120px; right: -120px; width: 360px; height: 360px; border-radius: 50%; background: radial-gradient(circle, rgba(37,99,235,0.35), transparent 70%); }
+.brand-panel::after { content: ''; position: absolute; bottom: -160px; left: -100px; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, rgba(59,130,246,0.18), transparent 70%); }
+.brand-top { position: relative; z-index: 2; }
+.brand-top .logo { display: flex; align-items: center; gap: 14px; text-decoration: none; color: #fff; }
+.brand-top .name { font-size: 17px; font-weight: 800; letter-spacing: 0.5px; }
+.brand-top .tag { font-size: 10.5px; color: #94A3B8; letter-spacing: 0.6px; margin-top: 1px; }
+
+.brand-mid { position: relative; z-index: 2; max-width: 440px; margin: 30px 0; }
+
+/* UNIQUE ELEGANT SERIF QUOTE BLOCK */
+.quote-container {
+  position: relative; margin-bottom: 24px; padding-left: 14px;
+  border-left: 3px solid #FBBF24;
+}
+
+.quote-mark {
+  position: absolute; top: -20px; left: 8px; font-size: 54px; color: rgba(251,191,36,0.25);
+  font-family: Georgia, serif; line-height: 1; pointer-events: none;
+}
+
+.unique-enterprise-quote {
+  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  font-size: 21px; font-weight: 600; line-height: 1.5; color: #F8FAFC;
+  margin: 0 0 10px 0; font-style: italic; letter-spacing: 0.3px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+}
+
+.quote-author-signature {
+  font-size: 11.5px; font-weight: 800; color: #FBBF24; letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* INCENSE FEATURE PILLARS (Cleaned & elevated from Image 3 reference) */
+.incense-pillars-grid {
+  display: flex; flex-direction: column; gap: 12px; margin-top: 24px;
+}
+
+.pillar-item {
+  display: flex; align-items: center; gap: 14px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px; padding: 12px 16px; backdrop-filter: blur(6px);
+  transition: all 0.2s ease;
+}
+
+.pillar-item:hover {
+  background: rgba(37,99,235,0.15); border-color: rgba(96,165,250,0.4);
+  transform: translateX(4px);
+}
+
+.pillar-ring {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1.5px solid rgba(251,191,36,0.5); background: rgba(251,191,36,0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+  box-shadow: 0 0 12px rgba(251,191,36,0.2);
+}
+
+.pillar-item .p-title {
+  font-size: 13px; font-weight: 700; color: #FFF; letter-spacing: 0.3px;
+}
+
+.pillar-item .p-sub {
+  font-size: 11px; color: #94A3B8; margin-top: 2px; line-height: 1.35;
+}
+
+.brand-foot { position: relative; z-index: 2; font-size: 11.5px; color: #64748B; }
+
+.login-panel { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; }
+.login-box { width: 100%; max-width: 420px; background: var(--card-bg, #fff); padding: 32px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 4px 16px rgba(0,0,0,0.04); }
+.login-box .eyebrow { margin-bottom: 8px; font-size: 11px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.5px; }
+.login-box h2 { font-size: 22px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.login-box p.sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+
+.login-box label { display: block; font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 6px; margin-top: 16px; }
+.input-wrap { display: flex; align-items: center; gap: 9px; border: 1px solid var(--border); border-radius: 9px; padding: 11px 13px; background: var(--bg); }
+.input-wrap:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-xs); }
+.input-wrap input { border: none; outline: none; flex: 1; font-size: 13.5px; color: var(--text); background: transparent; }
+.input-wrap .eye { cursor: pointer; opacity: 0.6; font-size: 14px; }
+
+/* Password Strength Checklist */
+.pw-checklist { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.check-tag { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px; background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
+.check-tag.valid { background: #ECFDF5; color: #059669; border-color: #A7F3D0; }
+
+.btn-login { width: 100%; padding: 12px 0; border-radius: 9px; border: none; background: var(--blue); color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 22px; transition: background 0.2s ease; }
+.btn-login:hover { background: var(--blue-hover, #1D4ED8); }
+.btn-login:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+.security-note { margin-top: 20px; font-size: 11.5px; color: var(--muted); line-height: 1.5; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+.back-link { display: block; text-align: center; margin-top: 14px; font-size: 12.5px; color: var(--muted); font-weight: 600; text-decoration: none; }
+.back-link:hover { text-decoration: underline; }
+
+/* OTP STEP 2 STYLING */
+.simulated-otp-banner { background: linear-gradient(135deg, #FEF3C7, #FDE68A); border: 1px solid #F59E0B; border-radius: 12px; padding: 14px; margin-bottom: 20px; color: #78350F; text-align: center; }
+.simulated-otp-banner .banner-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.simulated-otp-banner .banner-code { font-size: 18px; font-weight: 800; color: #B45309; letter-spacing: 2px; margin: 4px 0; }
+.simulated-otp-banner .banner-sub { font-size: 11px; opacity: 0.9; }
+
+.otp-error-alert { background: #FEF2F2; border: 1px solid #FECACA; color: #DC2626; padding: 10px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; margin-bottom: 16px; text-align: center; }
+
+.otp-inputs-grid { display: flex; gap: 8px; justify-content: center; margin: 20px 0; }
+.otp-digit-box { width: 44px; height: 50px; text-align: center; font-size: 22px; font-weight: 800; border: 2px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--navy); outline: none; transition: all 0.2s ease; }
+.otp-digit-box:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-xs); transform: translateY(-2px); }
+
+.otp-timer-row { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+.resend-link { background: none; border: none; color: var(--blue); font-weight: 700; cursor: pointer; text-decoration: underline; font-size: 12px; }
+.change-email-btn { background: none; border: none; color: var(--muted); font-weight: 600; cursor: pointer; font-size: 12px; }
+.change-email-btn:hover { color: var(--navy); }
+
+@media (max-width: 860px) { .brand-panel { display: none; } }

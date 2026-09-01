@@ -1,0 +1,137 @@
+.settings-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.settings-topbar-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--card-bg, #fff); border: 1px solid var(--border);
+  border-radius: 99px; padding: 6px 12px; cursor: pointer;
+  color: var(--navy); font-size: 13px; font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.settings-topbar-btn:hover, .settings-topbar-btn.active {
+  background: var(--blue-xs); border-color: var(--blue);
+  color: var(--blue); transform: translateY(-1px);
+}
+
+.settings-icon {
+  font-size: 15px; animation: spinIcon 12s linear infinite;
+}
+.settings-topbar-btn:hover .settings-icon {
+  animation: spinFast 1.5s linear infinite;
+}
+@keyframes spinIcon { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes spinFast { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+.settings-lang-badge {
+  font-size: 11px; font-weight: 700; background: var(--blue); color: #fff;
+  padding: 2px 7px; border-radius: 99px; text-transform: uppercase;
+}
+
+.settings-modal-panel {
+  position: absolute; top: calc(100% + 10px); right: 0;
+  width: 320px; background: var(--card-bg, #fff);
+  border: 1px solid var(--border); border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+  z-index: 1000; animation: popupSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+@keyframes popupSlide {
+  0% { opacity: 0; transform: translateY(-8px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.settings-modal-header {
+  padding: 14px 18px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg);
+}
+
+.settings-modal-header .title {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+}
+
+.settings-modal-header .close-btn {
+  background: none; border: none; font-size: 14px; color: var(--muted);
+  cursor: pointer; padding: 4px; border-radius: 4px;
+}
+.settings-modal-header .close-btn:hover { color: var(--navy); }
+
+.settings-modal-body {
+  padding: 16px; display: flex; flex-direction: column; gap: 16px;
+  max-height: 420px; overflow-y: auto;
+}
+
+.settings-section {
+  display: flex; flex-direction: column; gap: 8px;
+}
+
+.section-label {
+  font-size: 11.5px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.btn-group {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+
+.opt-btn {
+  padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--bg); color: var(--text); font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s ease; text-align: center;
+}
+.opt-btn:hover { border-color: var(--blue); color: var(--blue); }
+.opt-btn.selected {
+  background: var(--blue); border-color: var(--blue); color: #fff;
+  font-weight: 700; box-shadow: 0 2px 6px rgba(37,99,235,0.25);
+}
+
+.grid-opts {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+
+.theme-chip, .font-chip {
+  padding: 6px 10px; border-radius: 20px; border: 1px solid var(--border);
+  background: var(--bg); color: var(--text); font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s ease;
+}
+.theme-chip:hover, .font-chip:hover { border-color: var(--blue); color: var(--blue); }
+.theme-chip.selected, .font-chip.selected {
+  background: var(--blue-xs); border-color: var(--blue); color: var(--blue);
+  font-weight: 700;
+}
+
+.color-swatches {
+  display: flex; gap: 10px; align-items: center; margin-top: 4px;
+}
+
+.color-dot {
+  width: 24px; height: 24px; border-radius: 50%; border: 2px solid transparent;
+  cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.color-dot:hover { transform: scale(1.18); }
+.color-dot.selected {
+  border-color: #fff; box-shadow: 0 0 0 2px var(--blue), 0 4px 8px rgba(0,0,0,0.2);
+  transform: scale(1.2);
+}
+
+.color-dot.sapphire { background: #2563EB; }
+.color-dot.amber { background: #D97706; }
+.color-dot.emerald { background: #059669; }
+.color-dot.rose { background: #E11D48; }
+.color-dot.violet { background: #7C3AED; }
+
+.settings-modal-footer {
+  padding: 12px 16px; border-top: 1px solid var(--border);
+  background: var(--bg); text-align: center;
+}
+
+.full-settings-link {
+  font-size: 12px; font-weight: 700; color: var(--blue);
+  text-decoration: none; display: inline-block;
+}
+.full-settings-link:hover { text-decoration: underline; }

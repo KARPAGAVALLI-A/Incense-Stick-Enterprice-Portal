@@ -1,0 +1,48 @@
+.pagination-bar {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 14px 20px; background: var(--card-bg, #fff); border-top: 1px solid var(--border);
+  border-bottom-left-radius: 14px; border-bottom-right-radius: 14px;
+}
+
+.pagination-info {
+  font-size: 12.5px; color: var(--muted); font-weight: 500;
+}
+.pagination-info b {
+  color: var(--navy); font-weight: 700;
+}
+
+.pagination-controls {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+
+.page-size-selector {
+  display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); margin-right: 8px;
+}
+
+.page-size-select {
+  padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border);
+  background: var(--bg); color: var(--navy); font-size: 12px; font-weight: 700; outline: none;
+}
+
+.page-num-list {
+  display: flex; align-items: center; gap: 4px;
+}
+
+.pag-btn, .pag-num {
+  min-width: 32px; height: 32px; padding: 0 6px; border-radius: 7px;
+  border: 1px solid var(--border); background: var(--bg); color: var(--navy);
+  font-size: 12px; font-weight: 600; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; transition: all 0.15s ease;
+}
+
+.pag-btn:hover:not(:disabled), .pag-num:hover:not(.active) {
+  border-color: var(--blue); color: var(--blue); background: var(--blue-xs);
+}
+
+.pag-btn:disabled {
+  opacity: 0.4; cursor: not-allowed;
+}
+
+.pag-num.active {
+  background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 700;
+}

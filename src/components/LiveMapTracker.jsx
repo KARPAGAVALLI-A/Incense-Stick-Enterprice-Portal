@@ -1,183 +1,326 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./LiveMapTracker.css";
 
+// City coordinates mapped specifically for the India Map image (0 to 1 normalized coordinates)
+const CITY_COORDS = {
+  "Salem (Factory)": { x: 0.35, y: 0.77, state: "Tamil Nadu" },
+  "Chennai (Madras)": { x: 0.44, y: 0.73, state: "Tamil Nadu" },
+  "Coimbatore": { x: 0.32, y: 0.78, state: "Tamil Nadu" },
+  "Madurai": { x: 0.35, y: 0.83, state: "Tamil Nadu" },
+  "Tiruchirapalli": { x: 0.38, y: 0.79, state: "Tamil Nadu" },
+  "Bangalore": { x: 0.36, y: 0.70, state: "Karnataka" },
+  "Hyderabad": { x: 0.43, y: 0.58, state: "Telangana" },
+  "Mumbai": { x: 0.22, y: 0.53, state: "Maharashtra" },
+  "New Delhi": { x: 0.33, y: 0.26, state: "Delhi" },
+};
+
+const SAMPLE_ROUTES = [
+  { id: "R-101", origin: "Salem (Factory)", dest: "Chennai (Madras)", via: "Tiruchirapalli", driver: "Shanmugam", phone: "+91 98421 88320", truckNo: "TN-54-AX-9912" },
+  { id: "R-102", origin: "Salem (Factory)", dest: "Bangalore", via: "Hosur", driver: "Muthu Kumar", phone: "+91 97892 10394", truckNo: "TN-30-CZ-4501" },
+  { id: "R-103", origin: "Coimbatore", dest: "Hyderabad", via: "Bangalore", driver: "Ravi Chandran", phone: "+91 94432 11982", truckNo: "TN-38-K-8821" },
+  { id: "R-104", origin: "Madurai", dest: "Mumbai", via: "Hyderabad", driver: "Selvakumar", phone: "+91 98940 55120", truckNo: "TN-58-B-3344" },
+];
+
 export default function LiveMapTracker({ order, onClose }) {
-  const [progress, setProgress] = useState(0.45); // 0 to 1 along route
-  const [speed, setSpeed] = useState(62); // km/h
-  const [etaMinutes, setEtaMinutes] = useState(38);
+  const [progress, setProgress] = useState(0.42);
+  const [speed, setSpeed] = useState(64);
+  const [etaMinutes, setEtaMinutes] = useState(45);
+  const [selectedRoute, setSelectedRoute] = useState(SAMPLE_ROUTES[0]);
+  const [gpsCoords, setGpsCoords] = useState({ lat: "11.6643° N", lng: "78.1460° E" });
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   const canvasRef = useRef(null);
+  const imageRef = useRef(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
-  // Animate truck movement along route
+  // Load the user's specific India map image
+  useEffect(() => {
+    const img = new Image();
+    img.src = "/india-map-order.png";
+    img.onload = () => {
+      imageRef.current = img;
+      setImageLoaded(true);
+    };
+  }, []);
+
+  // Update selected route when order changes
+  useEffect(() => {
+    if (order) {
+      if (order.customer?.includes("Devi") || order.customer?.includes("Export")) {
+        setSelectedRoute(SAMPLE_ROUTES[1]);
+      } else if (order.customer?.includes("Annapoorna")) {
+        setSelectedRoute(SAMPLE_ROUTES[2]);
+      } else if (order.customer?.includes("Meenakshi")) {
+        setSelectedRoute(SAMPLE_ROUTES[3]);
+      } else {
+        setSelectedRoute(SAMPLE_ROUTES[0]);
+      }
+    }
+  }, [order]);
+
+  // Live truck simulation timer
   useEffect(() => {
     const interval = setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 0.98) return 0.2;
-        return prev + 0.004;
+        if (prev >= 0.98) return 0.05;
+        return prev + 0.005;
       });
-      setSpeed(Math.floor(58 + Math.random() * 10));
-      setEtaMinutes((prev) => Math.max(5, prev - (Math.random() > 0.7 ? 1 : 0)));
-    }, 1000);
+
+      setSpeed(Math.floor(58 + Math.random() * 12));
+      setEtaMinutes((prev) => Math.max(4, prev - (Math.random() > 0.6 ? 1 : 0)));
+
+      // Simulate slight coordinate movement
+      setGpsCoords({
+        lat: `${(11.6 + Math.random() * 0.8).toFixed(4)}° N`,
+        lng: `${(78.1 + Math.random() * 0.8).toFixed(4)}° E`
+      });
+    }, 800);
+
     return () => clearInterval(interval);
   }, []);
 
-  // Draw Interactive GPS Map Canvas
+  // Render Canvas Map with Image background and dynamic route line
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
-
     const w = canvas.width;
     const h = canvas.height;
 
     ctx.clearRect(0, 0, w, h);
 
-    // Grid pattern for map background
-    ctx.strokeStyle = "rgba(226, 232, 240, 0.4)";
-    ctx.lineWidth = 1;
-    for (let x = 0; x < w; x += 30) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
-    }
-    for (let y = 0; y < h; y += 30) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
-    }
+    // 1. Draw Map Image
+    if (imageRef.current && imageLoaded) {
+      ctx.drawImage(imageRef.current, 0, 0, w, h);
 
-    // Waypoints
-    const p1 = { x: w * 0.15, y: h * 0.75, name: "Salem Unit (Factory)" };
-    const p2 = { x: w * 0.50, y: h * 0.35, name: "Erode Transit Hub" };
-    const p3 = { x: w * 0.85, y: h * 0.65, name: order?.customer || "Coimbatore Warehouse" };
-
-    // Bezier Route Curve
-    ctx.beginPath();
-    ctx.moveTo(p1.x, p1.y);
-    ctx.quadraticCurveTo(w * 0.35, h * 0.15, p2.x, p2.y);
-    ctx.quadraticCurveTo(w * 0.70, h * 0.25, p3.x, p3.y);
-    ctx.strokeStyle = "#CBD5E1";
-    ctx.lineWidth = 6;
-    ctx.stroke();
-
-    // Active Traversed Route (Highlight Blue)
-    const t = progress;
-    // Calculate current truck position along quadratic bezier curves
-    let curX, curY;
-    if (t < 0.5) {
-      const segT = t / 0.5;
-      const ctrlX = w * 0.35, ctrlY = h * 0.15;
-      curX = (1 - segT) * (1 - segT) * p1.x + 2 * (1 - segT) * segT * ctrlX + segT * segT * p2.x;
-      curY = (1 - segT) * (1 - segT) * p1.y + 2 * (1 - segT) * segT * ctrlY + segT * segT * p2.y;
+      // Semi-transparent overlay to make GPS markers pop
+      ctx.fillStyle = "rgba(15, 23, 42, 0.08)";
+      ctx.fillRect(0, 0, w, h);
     } else {
-      const segT = (t - 0.5) / 0.5;
-      const ctrlX = w * 0.70, ctrlY = h * 0.25;
-      curX = (1 - segT) * (1 - segT) * p2.x + 2 * (1 - segT) * segT * ctrlX + segT * segT * p3.x;
-      curY = (1 - segT) * (1 - segT) * p2.y + 2 * (1 - segT) * segT * ctrlY + segT * segT * p3.y;
+      // Fallback background grid if loading
+      ctx.fillStyle = "#E2E8F0";
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = "#64748B";
+      ctx.font = "14px sans-serif";
+      ctx.fillText("Loading India GPS Map...", w / 2 - 80, h / 2);
     }
 
-    // Traversed line
+    // 2. Resolve origin and destination points
+    const originPoint = CITY_COORDS[selectedRoute.origin] || CITY_COORDS["Salem (Factory)"];
+    const destPoint = CITY_COORDS[selectedRoute.dest] || CITY_COORDS["Chennai (Madras)"];
+
+    const startX = originPoint.x * w;
+    const startY = originPoint.y * h;
+    const endX = destPoint.x * w;
+    const endY = destPoint.y * h;
+
+    // Control point for curved route line
+    const midX = (startX + endX) / 2 + 25;
+    const midY = (startY + endY) / 2 - 35;
+
+    // 3. Draw Full Planned Route Path (Dashed Glow Line)
     ctx.beginPath();
-    ctx.moveTo(p1.x, p1.y);
-    ctx.quadraticCurveTo(w * 0.35, h * 0.15, p2.x, p2.y);
-    ctx.strokeStyle = "#2563EB";
+    ctx.moveTo(startX, startY);
+    ctx.quadraticCurveTo(midX, midY, endX, endY);
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
     ctx.lineWidth = 6;
     ctx.stroke();
 
-    // Waypoint Markers
-    [p1, p2, p3].forEach((pt, idx) => {
-      ctx.beginPath();
-      ctx.arc(pt.x, pt.y, 8, 0, Math.PI * 2);
-      ctx.fillStyle = idx === 0 ? "#10B981" : idx === 1 ? "#3B82F6" : "#EF4444";
-      ctx.fill();
-      ctx.shadowColor = "rgba(0,0,0,0.2)";
-      ctx.shadowBlur = 6;
-
-      ctx.fillStyle = "#1E293B";
-      ctx.font = "bold 11px sans-serif";
-      ctx.fillText(pt.name, pt.x - 30, pt.y + 22);
-    });
-
-    // Moving Vehicle Marker (Truck Icon)
     ctx.beginPath();
-    ctx.arc(curX, curY, 14, 0, Math.PI * 2);
-    ctx.fillStyle = "#2563EB";
-    ctx.shadowColor = "#2563EB";
+    ctx.setLineDash([8, 6]);
+    ctx.moveTo(startX, startY);
+    ctx.quadraticCurveTo(midX, midY, endX, endY);
+    ctx.strokeStyle = "#3B82F6";
+    ctx.lineWidth = 4;
+    ctx.stroke();
+    ctx.setLineDash([]); // Reset line dash
+
+    // 4. Calculate Current Position of Moving Truck (Quadratic Bezier)
+    const t = progress;
+    const curX = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * midX + t * t * endX;
+    const curY = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * midY + t * t * endY;
+
+    // Traversed path highlight (Solid Green / Blue line)
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    // Draw partial quadratic curve up to current t
+    const subMidX = (1 - t / 2) * startX + (t / 2) * midX;
+    const subMidY = (1 - t / 2) * startY + (t / 2) * midY;
+    ctx.quadraticCurveTo(subMidX, subMidY, curX, curY);
+    ctx.strokeStyle = "#10B981";
+    ctx.lineWidth = 5;
+    ctx.stroke();
+
+    // 5. Draw Origin and Destination Pin Markers
+    // Origin Pin (Green)
+    drawMapPin(ctx, startX, startY, "#10B981", `🚩 ${selectedRoute.origin}`);
+    // Destination Pin (Red)
+    drawMapPin(ctx, endX, endY, "#EF4444", `🎯 ${selectedRoute.dest}`);
+
+    // 6. Draw Moving Live Truck Marker
+    ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
     ctx.shadowBlur = 12;
+
+    // Radar pulse ring around truck
+    ctx.beginPath();
+    ctx.arc(curX, curY, 18, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(37, 99, 235, 0.25)";
     ctx.fill();
 
-    ctx.fillStyle = "#FFF";
-    ctx.font = "14px sans-serif";
-    ctx.fillText("🚚", curX - 7, curY + 5);
+    // Truck outer badge
+    ctx.beginPath();
+    ctx.arc(curX, curY, 13, 0, Math.PI * 2);
+    ctx.fillStyle = "#1E40AF";
+    ctx.strokeStyle = "#FFFFFF";
+    ctx.lineWidth = 3;
+    ctx.fill();
+    ctx.stroke();
 
-  }, [progress, order]);
+    // Truck emoji
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "#FFF";
+    ctx.font = "13px sans-serif";
+    ctx.fillText("🚚", curX - 7, curY + 4);
+
+    // Truck Info Tooltip Tag
+    const tagWidth = 140;
+    const tagHeight = 32;
+    const tagX = Math.min(Math.max(curX - tagWidth / 2, 10), w - tagWidth - 10);
+    const tagY = curY - 45;
+
+    ctx.fillStyle = "#0F172A";
+    ctx.beginPath();
+    ctx.roundRect(tagX, tagY, tagWidth, tagHeight, 8);
+    ctx.fill();
+    ctx.strokeStyle = "#3B82F6";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.fillStyle = "#38BDF8";
+    ctx.font = "bold 11px sans-serif";
+    ctx.fillText(`🚚 ${selectedRoute.truckNo}`, tagX + 8, tagY + 14);
+    ctx.fillStyle = "#94A3B8";
+    ctx.font = "10px sans-serif";
+    ctx.fillText(`${speed} km/h · ${Math.round(progress * 100)}% completed`, tagX + 8, tagY + 26);
+
+  }, [progress, selectedRoute, imageLoaded]);
+
+  // Helper helper to draw location pin badges on map
+  function drawMapPin(ctx, x, y, color, label) {
+    ctx.shadowColor = "rgba(0,0,0,0.3)";
+    ctx.shadowBlur = 8;
+
+    ctx.beginPath();
+    ctx.arc(x, y, 7, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.strokeStyle = "#FFFFFF";
+    ctx.lineWidth = 2;
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "#0F172A";
+    ctx.font = "bold 11px sans-serif";
+    const txtWidth = ctx.measureText(label).width;
+
+    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+    ctx.fillRect(x - txtWidth / 2 - 4, y + 10, txtWidth + 8, 16);
+    ctx.fillStyle = "#0F172A";
+    ctx.fillText(label, x - txtWidth / 2, y + 22);
+  }
 
   return (
     <div className="map-modal-overlay" onClick={onClose}>
       <div className="map-modal-box" onClick={(e) => e.stopPropagation()}>
+        
         {/* Header */}
         <div className="map-modal-header">
           <div>
-            <div className="map-title">🗺️ Live GPS Route Tracking</div>
+            <div className="map-title">🗺️ Live GPS India Route Tracker</div>
             <div className="map-sub">
-              Order #{order?.id || "ORD-5081"} · {order?.customer || "South Traders"}
+              Order #{order?.id || "ORD-2031"} · {order?.customer || "Sri Balaji Traders"} · Product: {order?.product || "Rose Sandalwood Incense"}
             </div>
           </div>
           <button className="close-btn" onClick={onClose}>✕</button>
         </div>
 
-        {/* Live GPS Status Bar */}
+        {/* Route Selector & Telemetry Bar */}
         <div className="gps-status-row">
           <div className="gps-pill">
-            <span className="dot pulse" /> <b>GPS Live Streaming</b>
+            <span className="dot pulse" /> <b>GPS Live Connection</b>
           </div>
-          <div className="gps-stat">
-            <span className="lbl">Estimated Arrival:</span>
-            <span className="val">⏱ {etaMinutes} mins</span>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 11.5, color: "var(--muted)" }}>Select Route:</span>
+            <select
+              value={selectedRoute.id}
+              onChange={(e) => setSelectedRoute(SAMPLE_ROUTES.find(r => r.id === e.target.value))}
+              style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid #CBD5E1", fontSize: 11.5, fontWeight: 600 }}
+            >
+              {SAMPLE_ROUTES.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.origin} ➔ {r.dest} ({r.truckNo})
+                </option>
+              ))}
+            </select>
           </div>
+
           <div className="gps-stat">
-            <span className="lbl">Vehicle Speed:</span>
+            <span className="lbl">Speed:</span>
             <span className="val">⚡ {speed} km/h</span>
           </div>
+
           <div className="gps-stat">
-            <span className="lbl">Driver:</span>
-            <span className="val">📞 Shanmugam (+91 98421 88320)</span>
+            <span className="lbl">ETA:</span>
+            <span className="val">⏱ {etaMinutes} mins</span>
           </div>
         </div>
 
-        {/* Canvas Map View */}
-        <div className="canvas-wrapper">
-          <canvas ref={canvasRef} width={640} height={320} className="gps-canvas" />
+        {/* Real-time Telemetry Bar */}
+        <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 20px", background: "#F1F5F9", fontSize: 11.5, borderBottom: "1px solid #E2E8F0" }}>
+          <div>📍 <b>GPS Coords:</b> {gpsCoords.lat}, {gpsCoords.lng}</div>
+          <div>👤 <b>Driver:</b> {selectedRoute.driver} ({selectedRoute.phone})</div>
+          <div>🌡️ <b>Cargo Temp:</b> 27.4°C (Aroma Safe)</div>
         </div>
 
-        {/* Route Milestones List */}
+        {/* India Map Canvas View */}
+        <div className="canvas-wrapper">
+          <canvas ref={canvasRef} width={640} height={520} className="gps-canvas" />
+        </div>
+
+        {/* Route Milestones */}
         <div className="milestones-row">
           <div className="milestone-card done">
-            <div className="m-icon">📍</div>
+            <div className="m-icon">🏭</div>
             <div>
-              <div className="m-title">Salem Factory Unit</div>
-              <div className="m-time">Dispatched at 09:15 AM</div>
+              <div className="m-title">{selectedRoute.origin}</div>
+              <div className="m-time">Dispatched · 08:30 AM</div>
             </div>
           </div>
           <div className="milestone-card active">
             <div className="m-icon">🚚</div>
             <div>
-              <div className="m-title">En-route Erode Highway</div>
-              <div className="m-time">In transit · 62 km/h</div>
+              <div className="m-title">En-Route Via {selectedRoute.via}</div>
+              <div className="m-time">In Transit · {speed} km/h</div>
             </div>
           </div>
           <div className="milestone-card pending">
             <div className="m-icon">🎯</div>
             <div>
-              <div className="m-title">{order?.customer || "Destination Hub"}</div>
-              <div className="m-time">ETA: {etaMinutes} mins</div>
+              <div className="m-title">{selectedRoute.dest}</div>
+              <div className="m-time">ETA: {etaMinutes} mins remaining</div>
             </div>
           </div>
         </div>
 
-        {/* Footer */}
+        {/* Footer Actions */}
         <div className="map-modal-footer">
           <button className="btn btn-outline" onClick={onClose}>Close Map</button>
-          <button className="btn btn-primary" onClick={() => alert("Driver contacted! Telemetry log sent to manager.")}>
-            📞 Call Driver (Shanmugam)
+          <button className="btn btn-primary" onClick={() => alert(`Dialing driver ${selectedRoute.driver} at ${selectedRoute.phone}...`)}>
+            📞 Contact Driver ({selectedRoute.driver})
           </button>
         </div>
+
       </div>
     </div>
   );

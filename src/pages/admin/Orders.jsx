@@ -69,11 +69,11 @@ export default function Orders({ readOnly = false }) {
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   <button
-                    className="btn btn-outline"
-                    style={{ fontSize: 11.5, padding: "5px 12px" }}
+                    className="btn btn-primary"
+                    style={{ fontSize: 12, padding: "6px 14px", display: "flex", alignItems: "center", gap: 6, background: "#2563EB", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}
                     onClick={() => setActiveMapOrder(o)}
                   >
-                    🗺️ Track Live GPS Map
+                    <span>🗺️ Track Order on India GPS Map</span>
                   </button>
                   <span className={`badge ${STATUS_TONE[o.status]}`}>{o.status}</span>
                 </div>

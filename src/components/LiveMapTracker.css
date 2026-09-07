@@ -1,72 +1,74 @@
 .map-modal-overlay {
-  position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(4px); z-index: 9999;
-  display: flex; align-items: center; justify-content: center; padding: 20px;
+  position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(6px); z-index: 9999;
+  display: flex; align-items: center; justify-content: center; padding: 16px;
 }
 
 .map-modal-box {
-  background: var(--card-bg, #fff); border: 1px solid var(--border);
-  border-radius: 20px; width: 100%; max-width: 680px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.25); overflow: hidden;
+  background: var(--card-bg, #ffffff); border: 1px solid var(--border);
+  border-radius: 20px; width: 100%; max-width: 720px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.35); overflow: hidden;
   animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex; flex-direction: column; max-height: 92vh;
 }
 
 @keyframes modalPop {
-  0% { opacity: 0; transform: scale(0.95) translateY(10px); }
+  0% { opacity: 0; transform: scale(0.94) translateY(12px); }
   100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .map-modal-header {
-  padding: 18px 24px; border-bottom: 1px solid var(--border); background: var(--bg);
+  padding: 16px 24px; border-bottom: 1px solid var(--border); background: #F8FAFC;
   display: flex; align-items: center; justify-content: space-between;
 }
 
-.map-title { font-size: 16px; font-weight: 800; color: var(--navy); }
-.map-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.map-title { font-size: 16.5px; font-weight: 800; color: var(--navy, #0F172A); }
+.map-sub { font-size: 12px; color: var(--muted, #64748B); margin-top: 2px; }
 
 .gps-status-row {
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
-  padding: 12px 20px; background: var(--blue-xs); border-bottom: 1px solid var(--border);
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 20px; background: #EFF6FF; border-bottom: 1px solid #DBEAFE;
 }
 
 .gps-pill {
-  display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--blue);
+  display: flex; align-items: center; gap: 6px; font-size: 12px; color: #1D4ED8; font-weight: 700;
 }
 
 .dot.pulse {
-  width: 8px; height: 8px; border-radius: 50%; background: #10B981;
+  width: 9px; height: 9px; border-radius: 50%; background: #10B981;
   box-shadow: 0 0 0 3px rgba(16,185,129,0.3); animation: pulseDot 1.2s infinite;
 }
 @keyframes pulseDot { 0% { opacity: 0.4; } 100% { opacity: 1; } }
 
-.gps-stat { font-size: 11.5px; color: var(--muted); }
-.gps-stat .val { font-weight: 700; color: var(--navy); margin-left: 4px; }
+.gps-stat { font-size: 12px; color: #475569; }
+.gps-stat .val { font-weight: 700; color: #0F172A; margin-left: 4px; }
 
 .canvas-wrapper {
-  position: relative; width: 100%; background: #F8FAFC; border-bottom: 1px solid var(--border);
+  position: relative; width: 100%; background: #0F172A; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: center; align-items: center; overflow: hidden;
 }
 
 .gps-canvas {
-  width: 100%; height: auto; display: block;
+  width: 100%; max-height: 480px; object-fit: contain; display: block;
 }
 
 .milestones-row {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 16px 20px;
-  background: var(--bg); border-bottom: 1px solid var(--border);
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 14px 20px;
+  background: #F8FAFC; border-bottom: 1px solid var(--border);
 }
 
 .milestone-card {
-  display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px;
-  border: 1px solid var(--border); background: var(--card-bg);
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+  border: 1px solid var(--border); background: #FFFFFF;
 }
 
 .milestone-card.done { border-color: #A7F3D0; background: #ECFDF5; }
 .milestone-card.active { border-color: #BFDBFE; background: #EFF6FF; }
 
-.m-icon { font-size: 18px; }
-.m-title { font-size: 11.5px; font-weight: 700; color: var(--navy); }
-.m-time { font-size: 10px; color: var(--muted); }
+.m-icon { font-size: 20px; }
+.m-title { font-size: 11.5px; font-weight: 700; color: #0F172A; }
+.m-time { font-size: 10px; color: #64748B; margin-top: 1px; }
 
 .map-modal-footer {
-  padding: 14px 20px; display: flex; justify-content: flex-end; gap: 12px; background: var(--card-bg);
+  padding: 14px 20px; display: flex; justify-content: flex-end; gap: 12px; background: #FFFFFF;
 }

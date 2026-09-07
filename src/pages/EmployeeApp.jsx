@@ -5,6 +5,7 @@ import { useData } from "../context/DataContext";
 import { useNotifications } from "../context/NotificationContext";
 import NotificationBell from "../components/NotificationBell";
 import AiChatbot from "../components/AiChatbot";
+import EmployeeFeedbackModal from "../components/EmployeeFeedbackModal";
 import "./EmployeeApp.css";
 
 const MY_EMP_ID = "EMP-1042"; // demo employee identity
@@ -24,6 +25,7 @@ export default function EmployeeApp() {
   const [dayState, setDayState] = useState("idle");
   const [firstScanTime, setFirstScanTime] = useState(null);
   const [secondScanTime, setSecondScanTime] = useState(null);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
   useEffect(() => {
     if (!role) navigate("/login");
@@ -111,6 +113,15 @@ export default function EmployeeApp() {
             <span className="badge-fixed">📍 Registered Unit</span>
           </div>
 
+          {/* Employee Feedback & Report Issue Button */}
+          <button
+            className="btn-submit"
+            style={{ marginBottom: 16, background: "var(--navy)", padding: "10px 0" }}
+            onClick={() => setShowFeedbackModal(true)}
+          >
+            📝 Report Issue / Employee Feedback
+          </button>
+
           {view === "tasks" ? (
             <>
               <div className="section-label">My Assigned Tasks</div>
@@ -188,6 +199,11 @@ export default function EmployeeApp() {
           <div className="bn-item"><span className="bi">👤</span>Profile</div>
         </div>
       </div>
+
+      {/* Employee Feedback & Incident Report System Modal */}
+      {showFeedbackModal && (
+        <EmployeeFeedbackModal onClose={() => setShowFeedbackModal(false)} />
+      )}
 
       {/* Floating AI Chatbot Widget */}
       <AiChatbot />

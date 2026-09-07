@@ -1,81 +1,112 @@
-export const PRODUCTS = [
-  {
-    id: "PRD-001", icon: "🌹", name: "Rose Sandalwood Premium", status: "In Progress",
-    tone: "blue", inProd: 3200, target: 5000, pct: 64, stock: 4120, orders: 6800, toComplete: 2680,
-    materials: [
-      { name: "Bamboo Core Sticks", need: 5000, avail: 8200, status: "Sufficient", tone: "green" },
-      { name: "Rose Fragrance Oil", need: 40, avail: 52, status: "Sufficient", tone: "green" },
-      { name: "Sandalwood Powder", need: 120, avail: 95, status: "Low Stock", tone: "amber" },
-    ],
-  },
-  {
-    id: "PRD-002", icon: "🌿", name: "Jasmine Natural Masala", status: "In Progress",
-    tone: "blue", inProd: 2100, target: 4000, pct: 53, stock: 340, orders: 4200, toComplete: 3860,
-    materials: [
-      { name: "Bamboo Core Sticks", need: 4000, avail: 3900, status: "Low Stock", tone: "amber" },
-      { name: "Jasmine Fragrance Oil", need: 35, avail: 10, status: "Shortage", tone: "red" },
-      { name: "Masala Base Powder", need: 150, avail: 210, status: "Sufficient", tone: "green" },
-    ],
-  },
-  {
-    id: "PRD-003", icon: "🪵", name: "Cedarwood Dhoop Stick", status: "On Hold",
-    tone: "red", inProd: 0, target: 3000, pct: 0, stock: 0, orders: 2500, toComplete: 2500,
-    materials: [
-      { name: "Cedarwood Chips", need: 3000, avail: 400, status: "Shortage", tone: "red" },
-      { name: "Dhoop Binding Resin", need: 80, avail: 25, status: "Shortage", tone: "red" },
-    ],
-  },
-  {
-    id: "PRD-004", icon: "🌸", name: "Lavender Floral Standard", status: "Completed",
-    tone: "green", inProd: 4000, target: 4000, pct: 100, stock: 2860, orders: 1800, toComplete: 0,
-    materials: [
-      { name: "Bamboo Core Sticks", need: 4000, avail: 6000, status: "Sufficient", tone: "green" },
-      { name: "Lavender Fragrance Oil", need: 30, avail: 44, status: "Sufficient", tone: "green" },
-    ],
-  },
-  {
-    id: "PRD-005", icon: "🔥", name: "Camphor Temple Premium", status: "In Progress",
-    tone: "blue", inProd: 1900, target: 2500, pct: 76, stock: 180, orders: 2200, toComplete: 2020,
-    materials: [
-      { name: "Camphor Blocks", need: 2500, avail: 2100, status: "Low Stock", tone: "amber" },
-      { name: "Bamboo Core Sticks", need: 2500, avail: 3400, status: "Sufficient", tone: "green" },
-    ],
-  },
-  {
-    id: "PRD-006", icon: "🍋", name: "Lemon Grass Fresh", status: "Completed",
-    tone: "green", inProd: 5000, target: 5000, pct: 100, stock: 5460, orders: 1400, toComplete: 0,
-    materials: [
-      { name: "Bamboo Core Sticks", need: 5000, avail: 7100, status: "Sufficient", tone: "green" },
-      { name: "Lemon Grass Oil", need: 38, avail: 60, status: "Sufficient", tone: "green" },
-    ],
-  },
-];
-
+// 50 REALISTIC EMPLOYEE RECORDS FOR ISE SYSTEM DATABASE
 export const EMPLOYEES = [
-  { id: "EMP-1042", name: "Muthu Selvam", dept: "Rolling Unit", status: "Present", production: 6240, manager: "Priya Manager" },
-  { id: "EMP-1055", name: "Kavya Priya", dept: "Rolling Unit", status: "Present", production: 5810, manager: "Priya Manager" },
-  { id: "EMP-1061", name: "Arun Prakash", dept: "Drying & Packing", status: "Half Day", production: 2980, manager: "Priya Manager" },
-  { id: "EMP-1073", name: "Deepa Lakshmi", dept: "Rolling Unit", status: "Absent", production: 0, manager: "Priya Manager" },
-  { id: "EMP-1088", name: "Suresh Babu", dept: "Quality Check", status: "On Leave", production: 0, manager: "Priya Manager" },
-];
+  { id: "EMP-1001", name: "Muthu Selvam", dept: "Outdoor Sun-Drying", status: "Present", production: 4200, joined: "2021-03-15" },
+  { id: "EMP-1002", name: "Deepa Lakshmi", dept: "Outdoor Sun-Drying", status: "Present", production: 3900, joined: "2021-05-10" },
+  { id: "EMP-1003", name: "Karthik M", dept: "Outdoor Sun-Drying", status: "Present", production: 4100, joined: "2021-08-01" },
+  { id: "EMP-1004", name: "Anbarasu P", dept: "Rolling Unit", status: "Present", production: 5400, joined: "2020-01-12" },
+  { id: "EMP-1005", name: "Meenakshi S", dept: "Rolling Unit", status: "Present", production: 5100, joined: "2020-04-18" },
+  { id: "EMP-1006", name: "Selvakumar K", dept: "Rolling Unit", status: "Present", production: 5600, joined: "2019-11-20" },
+  { id: "EMP-1007", name: "Rajeshwari T", dept: "Packaging & Sealing", status: "Present", production: 4800, joined: "2022-02-14" },
+  { id: "EMP-1008", name: "Vijayakanth R", dept: "Packaging & Sealing", status: "Present", production: 4900, joined: "2022-06-01" },
+  { id: "EMP-1009", name: "Karpagavalli A", dept: "Quality Inspection", status: "Present", production: 6200, joined: "2019-03-10" },
+  { id: "EMP-1010", name: "Saravanan P", dept: "Fragrance Mixing", status: "Present", production: 5800, joined: "2018-09-05" },
 
-export const WAREHOUSES = [
-  { id: "WH-01", name: "Salem WH-01", location: "Salem, Tamil Nadu", capacity: 10000, used: 6800 },
-  { id: "WH-02", name: "Chennai WH-02", location: "Chennai, Tamil Nadu", capacity: 8000, used: 7040 },
-  { id: "WH-03", name: "Madurai WH-03", location: "Madurai, Tamil Nadu", capacity: 6000, used: 2520 },
-];
+  { id: "EMP-1011", name: "Dhanalakshmi R", dept: "Rolling Unit", status: "Present", production: 5200, joined: "2021-11-01" },
+  { id: "EMP-1012", name: "Muruganandam V", dept: "Rolling Unit", status: "Present", production: 5350, joined: "2020-07-15" },
+  { id: "EMP-1013", name: "Kavitha S", dept: "Packaging & Sealing", status: "Present", production: 4600, joined: "2022-01-10" },
+  { id: "EMP-1014", name: "Ganesan K", dept: "Outdoor Sun-Drying", status: "Present", production: 4050, joined: "2021-09-20" },
+  { id: "EMP-1015", name: "Sangeetha N", dept: "Quality Inspection", status: "Present", production: 5900, joined: "2020-03-01" },
+  { id: "EMP-1016", name: "Balamurugan T", dept: "Fragrance Mixing", status: "Present", production: 5700, joined: "2019-06-12" },
+  { id: "EMP-1017", name: "Revathi M", dept: "Packaging & Sealing", status: "Present", production: 4750, joined: "2022-04-05" },
+  { id: "EMP-1018", name: "Sivakumar P", dept: "Logistics & Delivery", status: "Present", production: 4300, joined: "2021-02-18" },
+  { id: "EMP-1019", name: "Sundari A", dept: "Rolling Unit", status: "Half Day", production: 2800, joined: "2020-10-10" },
+  { id: "EMP-1020", name: "Manikandan R", dept: "Rolling Unit", status: "Present", production: 5500, joined: "2019-12-01" },
 
-export const INVENTORY_ITEMS = [
-  { id: "PRD-001", icon: "🌹", name: "Rose Sandalwood Premium", tag: "PRD-001 · Premium", warehouse: "Salem WH-01", stock: 4120, reorderLevel: 500, status: "In Stock", tone: "green" },
-  { id: "PRD-002", icon: "🌿", name: "Jasmine Natural Masala", tag: "PRD-002 · Masala", warehouse: "Salem WH-01", stock: 340, reorderLevel: 400, status: "Low Stock", tone: "amber" },
-  { id: "PRD-003", icon: "🪵", name: "Cedarwood Dhoop Stick", tag: "PRD-003 · Dhoop", warehouse: "Chennai WH-02", stock: 0, reorderLevel: 300, status: "Out of Stock", tone: "red" },
-  { id: "PRD-004", icon: "🌸", name: "Lavender Floral Standard", tag: "PRD-004 · Standard", warehouse: "Madurai WH-03", stock: 2860, reorderLevel: 600, status: "In Stock", tone: "green" },
-  { id: "PRD-005", icon: "🔥", name: "Camphor Temple Premium", tag: "PRD-005 · Premium", warehouse: "Salem WH-01", stock: 180, reorderLevel: 250, status: "Low Stock", tone: "amber" },
-  { id: "PRD-006", icon: "🍋", name: "Lemon Grass Fresh", tag: "PRD-006 · Standard", warehouse: "Chennai WH-02", stock: 5460, reorderLevel: 400, status: "In Stock", tone: "green" },
+  { id: "EMP-1021", name: "Lakshmi Prabha", dept: "Packaging & Sealing", status: "Present", production: 4900, joined: "2022-08-15" },
+  { id: "EMP-1022", name: "Thangavelu K", dept: "Logistics & Delivery", status: "Present", production: 4400, joined: "2021-04-01" },
+  { id: "EMP-1023", name: "Uma Maheswari", dept: "Outdoor Sun-Drying", status: "Present", production: 3950, joined: "2021-12-10" },
+  { id: "EMP-1024", name: "Venkatesan G", dept: "Fragrance Mixing", status: "Present", production: 5650, joined: "2018-11-20" },
+  { id: "EMP-1025", name: "Poornima R", dept: "Quality Inspection", status: "Present", production: 6100, joined: "2020-08-05" },
+  { id: "EMP-1026", name: "Elumalai S", dept: "Rolling Unit", status: "Present", production: 5300, joined: "2020-05-12" },
+  { id: "EMP-1027", name: "Geetha V", dept: "Packaging & Sealing", status: "Present", production: 4650, joined: "2022-03-20" },
+  { id: "EMP-1028", name: "Ramasamy K", dept: "Outdoor Sun-Drying", status: "Absent", production: 0, joined: "2021-07-01" },
+  { id: "EMP-1029", name: "Chitra M", dept: "Rolling Unit", status: "Present", production: 5250, joined: "2021-01-15" },
+  { id: "EMP-1030", name: "Prabhu N", dept: "Logistics & Delivery", status: "Present", production: 4200, joined: "2021-06-10" },
+
+  { id: "EMP-1031", name: "Aarthy S", dept: "Packaging & Sealing", status: "Present", production: 4850, joined: "2022-05-01" },
+  { id: "EMP-1032", name: "Senthamizhan P", dept: "Rolling Unit", status: "Present", production: 5450, joined: "2020-09-18" },
+  { id: "EMP-1033", name: "Vidhya R", dept: "Quality Inspection", status: "Present", production: 6000, joined: "2020-02-10" },
+  { id: "EMP-1034", name: "Suresh Kumar", dept: "Fragrance Mixing", status: "Present", production: 5750, joined: "2019-01-05" },
+  { id: "EMP-1035", name: "Vijayalakshmi K", dept: "Outdoor Sun-Drying", status: "Present", production: 4000, joined: "2021-10-25" },
+  { id: "EMP-1036", name: "Mohanraj T", dept: "Rolling Unit", status: "Present", production: 5380, joined: "2020-06-14" },
+  { id: "EMP-1037", name: "Santhiya B", dept: "Packaging & Sealing", status: "Present", production: 4700, joined: "2022-07-12" },
+  { id: "EMP-1038", name: "Kumaresan M", dept: "Logistics & Delivery", status: "Present", production: 4350, joined: "2021-03-30" },
+  { id: "EMP-1039", name: "Priya Dharshini", dept: "Rolling Unit", status: "On Leave", production: 0, joined: "2021-08-15" },
+  { id: "EMP-1040", name: "Arulmozhi V", dept: "Outdoor Sun-Drying", status: "Present", production: 4120, joined: "2021-11-20" },
+
+  { id: "EMP-1041", name: "Natarajan S", dept: "Rolling Unit", status: "Present", production: 5420, joined: "2020-04-01" },
+  { id: "EMP-1042", name: "Vasanthi P", dept: "Packaging & Sealing", status: "Present", production: 4800, joined: "2022-09-01" },
+  { id: "EMP-1043", name: "Dinesh Kumar", dept: "Rolling Unit", status: "Present", production: 5310, joined: "2020-11-10" },
+  { id: "EMP-1044", name: "Kalaivani R", dept: "Outdoor Sun-Drying", status: "Present", production: 3980, joined: "2021-06-05" },
+  { id: "EMP-1045", name: "Jayachandran K", dept: "Quality Inspection", status: "Present", production: 6150, joined: "2019-07-20" },
+  { id: "EMP-1046", name: "Sumathi M", dept: "Packaging & Sealing", status: "Present", production: 4720, joined: "2022-10-15" },
+  { id: "EMP-1047", name: "Vigneshwaran P", dept: "Rolling Unit", status: "Present", production: 5490, joined: "2020-08-01" },
+  { id: "EMP-1048", name: "Ambika S", dept: "Fragrance Mixing", status: "Present", production: 5680, joined: "2019-04-12" },
+  { id: "EMP-1049", name: "Praveen Kumar", dept: "Logistics & Delivery", status: "Present", production: 4280, joined: "2021-05-25" },
+  { id: "EMP-1050", name: "Shanthi V", dept: "Outdoor Sun-Drying", status: "Present", production: 4060, joined: "2021-09-01" }
 ];
 
 export const PAST_EMPLOYEES = [
-  { id: "EMP-0912", name: "Vignesh G.", dept: "Rolling Unit", joined: "04 Jan 2023", left: "28 Feb 2026", total: 482600, reason: "Resigned" },
-  { id: "EMP-0877", name: "Pooja R.", dept: "Drying & Packing", joined: "18 Aug 2022", left: "15 May 2026", total: 391200, reason: "Resigned" },
-  { id: "EMP-0803", name: "Karthik M.", dept: "Quality Check", joined: "02 Mar 2022", left: "10 Apr 2026", total: 215400, reason: "Terminated" },
+  { id: "EMP-0988", name: "Shanmugam P", dept: "Rolling Unit", joined: "2018-01-10", left: "2024-02-15", total: 420000, reason: "Retired" },
+  { id: "EMP-0989", name: "Jayabharathi R", dept: "Packaging", joined: "2019-05-12", left: "2023-11-30", total: 310000, reason: "Relocated" },
+  { id: "EMP-0990", name: "Anand Kumar", dept: "Drying Unit", joined: "2020-02-18", left: "2024-01-10", total: 280000, reason: "Higher Studies" },
+  { id: "EMP-0991", name: "Subbulakshmi S", dept: "Quality Check", joined: "2017-09-01", left: "2023-08-20", total: 510000, reason: "Personal" }
+];
+
+export const INVENTORY_ITEMS = [
+  { id: "PRD-001", icon: "🪔", name: "Chandan Supreme 100g", tag: "PRD-001 · Best Seller", warehouse: "Salem Plant Warehouse", stock: 45000, reorderLevel: 10000, status: "In Stock", tone: "green" },
+  { id: "PRD-002", icon: "🌹", name: "Rose Gold Cone 50p", tag: "PRD-002 · High Demand", warehouse: "Salem Plant Warehouse", stock: 12000, reorderLevel: 8000, status: "In Stock", tone: "green" },
+  { id: "PRD-003", icon: "🌸", name: "Jasmine Mogra Stick", tag: "PRD-003 · Festival Offer", warehouse: "Erode Logistics Hub", stock: 3500, reorderLevel: 5000, status: "Low Stock", tone: "amber" },
+  { id: "PRD-004", icon: "🪴", name: "Sambrani Cup Premium", tag: "PRD-004 · Traditional", warehouse: "Chennai Central Hub", stock: 0, reorderLevel: 6000, status: "Out of Stock", tone: "red" },
+  { id: "PRD-005", icon: "🪵", name: "Dhoop Cones Assorted", tag: "PRD-005 · Combo Pack", warehouse: "Salem Plant Warehouse", stock: 28000, reorderLevel: 7000, status: "In Stock", tone: "green" }
+];
+
+export const PRODUCTS = [
+  {
+    id: "PRD-001",
+    name: "Rose Sandalwood Premium",
+    icon: "🪔",
+    materials: [
+      { id: "RM-01", name: "Bamboo Sticks (9-inch)", stock: 50, reorder: 100, unit: "kg", tone: "red" },
+      { id: "RM-02", name: "Jigat Powder (Binder)", stock: 30, reorder: 80, unit: "kg", tone: "amber" },
+      { id: "RM-03", name: "Rose Essential Oil", stock: 12, reorder: 10, unit: "L", tone: "green" },
+      { id: "RM-04", name: "Sandalwood Powder", stock: 45, reorder: 30, unit: "kg", tone: "green" },
+      { id: "RM-05", name: "Charcoal Powder", stock: 200, reorder: 150, unit: "kg", tone: "green" }
+    ]
+  },
+  {
+    id: "PRD-002",
+    name: "Jasmine Natural Masala",
+    icon: "🌸",
+    materials: [
+      { id: "RM-06", name: "Jasmine Extract Oil", stock: 8, reorder: 15, unit: "L", tone: "amber" },
+      { id: "RM-07", name: "White Chips Powder", stock: 90, reorder: 60, unit: "kg", tone: "green" },
+      { id: "RM-08", name: "Bamboo Sticks (8-inch)", stock: 120, reorder: 100, unit: "kg", tone: "green" }
+    ]
+  },
+  {
+    id: "PRD-003",
+    name: "Cedarwood Dhoop Stick",
+    icon: "🪵",
+    materials: [
+      { id: "RM-09", name: "Cedarwood Oil", stock: 5, reorder: 10, unit: "L", tone: "red" },
+      { id: "RM-10", name: "Coumarin Powder", stock: 25, reorder: 20, unit: "kg", tone: "green" }
+    ]
+  }
+];
+
+export const WAREHOUSES = [
+  { id: "WH-01", name: "Salem Plant Warehouse", location: "Salem Main Unit", capacity: 100000, used: 75000 },
+  { id: "WH-02", name: "Erode Logistics Hub", location: "Erode Industrial Zone", capacity: 50000, used: 28000 },
+  { id: "WH-03", name: "Chennai Central Hub", location: "Guindy Storage Yard", capacity: 80000, used: 64000 }
 ];

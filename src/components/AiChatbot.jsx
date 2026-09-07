@@ -10,13 +10,13 @@ export default function AiChatbot() {
     {
       id: 1,
       sender: "ai",
-      text: "👋 Vanakkam! I am ISE AI Assistant. Ask me about employees, production, stock, orders, or Profit & Loss!",
+      text: "👋 Vanakkam! I am ISE AI Assistant. Ask me about weather alerts, rain work-stops, GPS tracking, employees, stock, or Profit & Loss!",
       quickPrompts: [
+        "🌧️ Weather Alert & Rain Work Stop",
+        "🗺️ Live GPS Delivery Map",
         "💹 Profit & Loss Overview",
-        "📊 Today's Revenue & Production",
         "👷 Present Employees Count",
-        "📦 Low Stock Alert",
-        "🚚 Pending Orders Status"
+        "📦 Low Stock Alert"
       ]
     }
   ]);
@@ -37,6 +37,30 @@ export default function AiChatbot() {
   function processAiResponse(query) {
     const rawQ = query.toLowerCase();
     const cleanQ = rawQ.replace(/[^a-z0-9\u0B80-\u0BFF]/g, ""); // Normalize spaces, dashes, symbols
+
+    // 0. WEATHER / RAIN / WORK STOP / SMS QUERY
+    if (
+      cleanQ.includes("weather") ||
+      cleanQ.includes("rain") ||
+      cleanQ.includes("downpour") ||
+      cleanQ.includes("workstop") ||
+      cleanQ.includes("stopwork") ||
+      cleanQ.includes("sms") ||
+      cleanQ.includes("intimate") ||
+      rawQ.includes("மழை") ||
+      rawQ.includes("வானிலை")
+    ) {
+      return {
+        text: `🌧️ **AI Weather Sentinel Alert**:\n• Status: **Heavy Downpour Warning (88% Rain Probability)**\n• Action: **Outdoor Sun-Drying Unit Halted**\n• Manager Intimation & SMS Dispatched to 3 Workers`,
+        cards: [
+          "• Muthu Selvam: Outdoor Sun-Drying ➔ Shifted to Indoor Box Packaging",
+          "• Deepa Lakshmi: Sun-Drying B ➔ Shifted to Quality Check",
+          "• Karthik M: Bamboo Tray Drying ➔ Shifted to Sambrani Moulding"
+        ],
+        link: "/manager",
+        linkText: "View Manager Rain Sentinel & Send SMS →"
+      };
+    }
 
     // 1. PROFIT & LOSS / FINANCIAL QUERY
     if (
@@ -107,7 +131,7 @@ export default function AiChatbot() {
       };
     }
 
-    // 4. ORDERS QUERY
+    // 4. ORDERS QUERY / MAP TRACKING
     if (
       cleanQ.includes("order") ||
       cleanQ.includes("customer") ||
@@ -115,14 +139,16 @@ export default function AiChatbot() {
       cleanQ.includes("shipped") ||
       cleanQ.includes("delivered") ||
       cleanQ.includes("delivery") ||
+      cleanQ.includes("map") ||
+      cleanQ.includes("gps") ||
       rawQ.includes("ஆர்டர்")
     ) {
       const pendingOrders = (orders || []).filter((o) => o.status !== "Delivered");
       return {
-        text: `🚚 **Orders Pipeline**: There are **${pendingOrders.length} pending orders** currently being processed or shipped:`,
+        text: `🚚 **Orders Pipeline & Live GPS Tracking**: There are **${pendingOrders.length} pending orders** currently in transit:`,
         cards: (orders || []).slice(0, 3).map((o) => `• ${o.id}: ${o.customer} - ${o.items || o.product} (${o.status})`),
         link: "/admin/orders",
-        linkText: "Open Order Tracker →"
+        linkText: "Open Live GPS Order Map →"
       };
     }
 
@@ -143,27 +169,9 @@ export default function AiChatbot() {
       };
     }
 
-    // 6. PRODUCTS QUERY
-    if (
-      cleanQ.includes("product") ||
-      cleanQ.includes("chandan") ||
-      cleanQ.includes("rose") ||
-      cleanQ.includes("jasmine") ||
-      cleanQ.includes("dhoop") ||
-      cleanQ.includes("sambrani") ||
-      cleanQ.includes("cone") ||
-      rawQ.includes("தயாரிப்பு")
-    ) {
-      return {
-        text: `🪔 **Top Incense Products by Demand**:\n1. **Chandan Premium 100g** (Target: 50,000 units)\n2. **Rose Gold Cone 50p** (Target: 30,000 units)\n3. **Jasmine Mogra Stick** (Target: 40,000 units)`,
-        link: "/admin/inventory",
-        linkText: "View Full Inventory →"
-      };
-    }
-
     // Fallback Response
     return {
-      text: `🤖 ISE Assistant here! I searched the system for "${query}". You can ask about:\n• 💹 Profit & Loss metrics\n• 👷 Employees present today\n• 📦 Stock levels & raw materials\n• 🚚 Pending orders & shipments`,
+      text: `🤖 ISE Assistant here! I searched the system for "${query}". You can ask about:\n• 🌧️ Weather Alert & Rain Work Stop\n• 🗺️ Live GPS Delivery Map\n• 💹 Profit & Loss metrics\n• 👷 Employees present today\n• 📦 Stock levels & raw materials`,
       link: "/admin",
       linkText: "Go to Business Dashboard →"
     };
@@ -214,7 +222,7 @@ export default function AiChatbot() {
               <span className="bot-avatar">🤖</span>
               <div>
                 <div className="bot-name">ISE AI Assistant</div>
-                <div className="bot-status">● Live Data Engine</div>
+                <div className="bot-status">● Live Weather &amp; GPS Engine</div>
               </div>
             </div>
             <button className="close-btn" onClick={() => setIsOpen(false)}>✕</button>
@@ -289,7 +297,7 @@ export default function AiChatbot() {
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder="Ask AI about profit&loss, employees, stock..."
+              placeholder="Ask AI about rain alert, GPS map, stock..."
               className="ai-input"
             />
             <button type="submit" className="ai-send-btn">

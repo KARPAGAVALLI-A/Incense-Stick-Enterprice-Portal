@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useSettings } from "../../context/SettingsContext";
+import WeatherSentinel from "../../components/WeatherSentinel";
 
 function Kpi({ icon, label, value, sub, tone }) {
   const barColor = { blue: "var(--blue)", green: "#10B981", amber: "#F59E0B", purple: "#8B5CF6" }[tone];
@@ -31,6 +32,9 @@ export default function Dashboard() {
             : "Production, inventory, sales & staff — one screen, everything that matters today"}
         </p>
       </div>
+
+      {/* 🌧️ AI WEATHER SENTINEL & RAIN WORK-STOP CARD */}
+      <WeatherSentinel />
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 24 }}>
         <Kpi icon="⚙️" label={language === "ta" ? "உற்பத்தி செய்த அகர்பத்திகள்" : "Sticks Produced"} value="42,600" sub="▲ 8% vs yesterday" tone="blue" />

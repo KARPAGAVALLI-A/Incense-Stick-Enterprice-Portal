@@ -23,6 +23,8 @@ import InventoryDetail from "./pages/admin/InventoryDetail";
 import ProfitLoss from "./pages/admin/ProfitLoss";
 import TeamOverview from "./pages/admin/TeamOverview";
 import Settings from "./pages/admin/Settings";
+import CustomerReach from "./pages/admin/CustomerReach";
+import IndiaFleetGpsMap from "./components/IndiaFleetGpsMap";
 
 import ManagerLayout from "./pages/manager/ManagerLayout";
 import ManagerHome from "./pages/manager/ManagerHome";
@@ -34,7 +36,6 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 2.2 seconds for the Incense Stick to Vilakku fire spark animation to play smoothly
     const t = setTimeout(() => setLoading(false), 2200);
     return () => clearTimeout(t);
   }, []);
@@ -54,6 +55,8 @@ export default function App() {
 
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<Dashboard />} />
+                <Route path="fleet-gps" element={<IndiaFleetGpsMap />} />
+                <Route path="customer-reach" element={<CustomerReach />} />
                 <Route path="employees" element={<Employees />} />
                 <Route path="employees/:id" element={<EmployeeDetail />} />
                 <Route path="production" element={<Production />} />

@@ -1,0 +1,93 @@
+.geotelm-wrapper {
+  background: #F3F4F6; border: 2px solid #9CA3AF; border-radius: 8px;
+  overflow: hidden; max-width: 1060px; font-family: Tahoma, Geneva, sans-serif;
+  color: #1F2937; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.geotelm-top-bar {
+  background: linear-gradient(180deg, #E5E7EB, #D1D5DB); border-bottom: 1px solid #9CA3AF;
+  padding: 6px 14px; display: flex; justify-content: space-between; font-size: 11.5px;
+}
+
+.gt-links span { color: #1D4ED8; cursor: pointer; text-decoration: underline; }
+.gt-links .logout { color: #DC2626; }
+
+.geotelm-nav-tabs {
+  background: #E5E7EB; border-bottom: 2px solid #6B7280; display: flex; align-items: flex-end;
+  padding: 4px 10px 0 10px; gap: 4px; font-size: 11.5px; font-weight: 700;
+}
+
+.gt-tab {
+  padding: 6px 18px; border: 1px solid #9CA3AF; border-bottom: none; border-radius: 6px 6px 0 0;
+  background: #D1D5DB; color: #374151; cursor: pointer;
+}
+
+.gt-tab.active {
+  background: #FFF; border-color: #6B7280; color: #111827; box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
+}
+
+.gt-last-event { margin-left: auto; font-size: 10.5px; color: #4B5563; font-weight: normal; padding-bottom: 4px; }
+
+.geotelm-workspace { padding: 12px; background: #FFF; }
+
+.gt-device-bar {
+  background: #F3F4F6; border: 1px solid #D1D5DB; padding: 6px 12px;
+  border-radius: 4px; font-size: 12px; font-weight: 700; margin-bottom: 10px;
+}
+
+.gt-select { padding: 3px 8px; font-size: 11.5px; border: 1px solid #9CA3AF; border-radius: 3px; margin-left: 8px; }
+
+.gt-main-grid { display: grid; grid-template-columns: 1fr 280px; gap: 12px; }
+
+.gt-canvas-container {
+  position: relative; border: 2px solid #6B7280; border-radius: 4px; overflow: hidden;
+  background: #E5E7EB;
+}
+
+.gt-zoom-controls {
+  position: absolute; top: 10px; left: 10px; z-index: 10;
+  background: rgba(255,255,255,0.9); border: 1px solid #9CA3AF; border-radius: 4px;
+  padding: 4px; display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.gt-zoom-controls button { width: 22px; height: 22px; border: 1px solid #6B7280; background: #E5E7EB; font-weight: bold; cursor: pointer; }
+.zoom-slider-track { width: 6px; height: 70px; background: #9CA3AF; position: relative; border-radius: 3px; }
+.zoom-handle { width: 14px; height: 10px; background: #1D4ED8; border-radius: 2px; position: absolute; left: -4px; cursor: pointer; }
+
+.gt-canvas { width: 100%; height: 420px; display: block; cursor: crosshair; }
+
+.gt-canvas-footer { background: #E5E7EB; border-top: 1px solid #9CA3AF; padding: 4px 10px; text-align: center; font-size: 11px; font-weight: bold; color: #1D4ED8; }
+
+.gt-sidebar-panel { display: flex; flex-direction: column; gap: 10px; }
+
+.gt-panel-box {
+  background: #F9FAFB; border: 1px solid #D1D5DB; border-radius: 4px; padding: 10px; font-size: 11px;
+}
+
+.box-title { font-weight: bold; color: #111827; margin-bottom: 6px; border-bottom: 1px solid #E5E7EB; padding-bottom: 3px; }
+
+.date-row { margin-bottom: 4px; }
+
+.mini-calendar {
+  border: 1px solid #9CA3AF; background: #FFF; margin: 8px 0; padding: 4px; text-align: center;
+}
+.cal-header { background: #1E3A8A; color: #FFF; font-weight: bold; font-size: 10px; padding: 2px 0; }
+.cal-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; font-size: 9.5px; margin-top: 2px; }
+.cal-days span.sel { background: #3B82F6; color: #FFF; font-weight: bold; border-radius: 2px; }
+
+.time-zone-row { margin-top: 6px; }
+.gt-select-sm { font-size: 10px; padding: 2px; border: 1px solid #9CA3AF; width: 100%; margin-top: 2px; }
+
+.btn-gt-update { width: 100%; margin-top: 8px; padding: 4px 0; background: #E5E7EB; border: 1px solid #6B7280; font-size: 11px; font-weight: bold; cursor: pointer; }
+
+.btn-replay { width: 100%; padding: 6px 0; background: #2563EB; color: #FFF; border: none; border-radius: 3px; font-size: 11px; font-weight: bold; cursor: pointer; }
+
+.cursor-loc-readout { margin-top: 8px; font-size: 10.5px; line-height: 1.4; color: #374151; }
+.cursor-loc-readout .coords { font-family: monospace; color: #1D4ED8; font-weight: bold; }
+
+/* PUSHPIN LEGEND (Exact match from photo) */
+.legend-box { background: #FFF; }
+.legend-item { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 10.5px; font-weight: 600; }
+
+.gt-footer { background: #E5E7EB; border-top: 1px solid #9CA3AF; padding: 4px 10px; font-size: 10px; color: #6B7280; text-align: justify; }
+
+@media (max-width: 860px) { .gt-main-grid { grid-template-columns: 1fr; } }

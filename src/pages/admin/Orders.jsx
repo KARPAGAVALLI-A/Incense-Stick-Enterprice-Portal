@@ -1,9 +1,10 @@
-import React, { useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { useSearchParams, useLocation } from "react-router-dom";
 import { useData } from "../../context/DataContext";
 import { useNotifications } from "../../context/NotificationContext";
 import { useSettings } from "../../context/SettingsContext";
 import Pagination from "../../components/Pagination";
+import LiveMapTracker from "../../components/LiveMapTracker";
 
 const STATUS_STEPS = ["Placed", "Processing", "Shipped", "Delivered"];
 const STATUS_TONE = { Placed: "badge-blue", Processing: "badge-amber", Shipped: "badge-blue", Delivered: "badge-green" };
@@ -12,6 +13,8 @@ export default function Orders({ readOnly = false }) {
   const { orders, updateOrderStatus } = useData();
   const { push } = useNotifications();
   const { t } = useSettings();
+
+  const [activeMapOrder, setActiveMapOrder] = useState(null);
 
   // Router hooks for Pagination URL query parameters
   const [searchParams, setSearchParams] = useSearchParams();
@@ -64,7 +67,16 @@ export default function Orders({ readOnly = false }) {
                   <div style={{ fontWeight: 700, color: "var(--navy)", fontSize: 14.5 }}>{o.id} · {o.customer}</div>
                   <div style={{ fontSize: 12.5, color: "var(--muted)", marginTop: 2 }}>{o.product} · {o.qty.toLocaleString()} units · placed {o.placed}</div>
                 </div>
-                <span className={`badge ${STATUS_TONE[o.status]}`}>{o.status}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <button
+                    className="btn btn-outline"
+                    style={{ fontSize: 11.5, padding: "5px 12px" }}
+                    onClick={() => setActiveMapOrder(o)}
+                  >
+                    🗺️ Track Live GPS Map
+                  </button>
+                  <span className={`badge ${STATUS_TONE[o.status]}`}>{o.status}</span>
+                </div>
               </div>
 
               <div style={{ display: "flex", alignItems: "center", marginBottom: readOnly ? 0 : 16 }}>
@@ -107,6 +119,11 @@ export default function Orders({ readOnly = false }) {
           onPageSizeChange={handlePageSizeChange}
         />
       </div>
+
+      {/* Interactive GPS Route Map Tracker Modal */}
+      {activeMapOrder && (
+        <LiveMapTracker order={activeMapOrder} onClose={() => setActiveMapOrder(null)} />
+      )}
     </div>
   );
 }

@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { EMPLOYEES as SEED_EMPLOYEES, PRODUCTS } from "../data/mockData";
+import { db } from "../services/dbService";
+import { PRODUCTS } from "../data/mockData";
 
 const DataContext = createContext(null);
-const EMP_KEY = "ise_employees";
 const ORD_KEY = "ise_orders";
 const TASK_KEY = "ise_tasks";
 
@@ -26,10 +26,9 @@ export const STATUS_STEPS = ["Placed", "Processing", "Shipped", "Delivered"];
 export const TASK_STEPS = ["Assigned", "In Progress", "Completed"];
 
 const SEED_TASKS = [
-  { id: "TSK-001", productId: "PRD-003", productName: "Cedarwood Dhoop Stick", employeeId: "EMP-1061", employeeName: "Arun Prakash", qty: 1500, status: "In Progress", assignedBy: "Ravi Kumar", assignedDate: "13 Jul 2026", note: "Cedarwood Chips shortage — priority roll" },
+  { id: "TSK-001", productId: "PRD-003", productName: "Cedarwood Dhoop Stick", employeeId: "EMP-1042", employeeName: "Muthu Selvam", qty: 1500, status: "In Progress", assignedBy: "Ravi Kumar", assignedDate: "13 Jul 2026", note: "Cedarwood Chips shortage — priority roll" },
 ];
 
-// Flatten every product's raw materials into one stock list, tagged with which product needs it
 export function getStockList() {
   const rows = [];
   PRODUCTS.forEach((p) => {
@@ -41,26 +40,18 @@ export function getStockList() {
 }
 
 export function DataProvider({ children }) {
-  const [employees, setEmployees] = useState(() => load(EMP_KEY, SEED_EMPLOYEES));
+  // Always query database service for 50 employees
+  const [employees, setEmployees] = useState(() => db.getEmployees());
   const [orders, setOrders] = useState(() => load(ORD_KEY, SEED_ORDERS));
   const [tasks, setTasks] = useState(() => load(TASK_KEY, SEED_TASKS));
 
-  useEffect(() => { localStorage.setItem(EMP_KEY, JSON.stringify(employees)); }, [employees]);
+  useEffect(() => { db.saveEmployees(employees); }, [employees]);
   useEffect(() => { localStorage.setItem(ORD_KEY, JSON.stringify(orders)); }, [orders]);
   useEffect(() => { localStorage.setItem(TASK_KEY, JSON.stringify(tasks)); }, [tasks]);
 
-  useEffect(() => {
-    function onStorage(e) {
-      if (e.key === EMP_KEY && e.newValue) setEmployees(JSON.parse(e.newValue));
-      if (e.key === ORD_KEY && e.newValue) setOrders(JSON.parse(e.newValue));
-      if (e.key === TASK_KEY && e.newValue) setTasks(JSON.parse(e.newValue));
-    }
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
-
   function addEmployee(emp) {
-    setEmployees((prev) => [...prev, emp]);
+    const updated = db.addEmployee(emp);
+    setEmployees(updated);
   }
 
   function updateOrderStatus(orderId, status) {
@@ -90,7 +81,7 @@ export function DataProvider({ children }) {
   }
 
   return (
-    <DataContext.Provider value={{ employees, addEmployee, orders, updateOrderStatus, tasks, addTask, updateTaskStatus }}>
+    <DataContext.Provider value={{ employees, addEmployee, orders, updateOrderStatus, tasks, addTask, updateTaskStatus, db }}>
       {children}
     </DataContext.Provider>
   );

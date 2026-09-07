@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useData } from "../../context/DataContext";
 import { useNotifications } from "../../context/NotificationContext";
+import WeatherSentinel from "../../components/WeatherSentinel";
 
 const attTone = { Present: "badge-green", "Half Day": "badge-amber", Absent: "badge-red", "On Leave": "badge-blue" };
 const taskTone = { Assigned: "badge-blue", "In Progress": "badge-amber", Completed: "badge-green" };
@@ -23,17 +24,20 @@ export default function ManagerHome() {
   return (
     <div>
       <div style={{ marginBottom: 20 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--navy)" }}>Employee Work</h1>
-        <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>See what every employee is working on right now</p>
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--navy)" }}>Employee Work &amp; Weather Operations</h1>
+        <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>See what every employee is working on and monitor rain work-stop alerts</p>
       </div>
 
+      {/* 🌧️ AI WEATHER SENTINEL & RAIN WORK-STOP CARD */}
+      <WeatherSentinel />
+
       <div style={{ display: "flex", gap: 4, background: "var(--bg)", border: "1px solid var(--border)", borderRadius: 10, padding: 4, width: "fit-content", marginBottom: 20 }}>
-        <div onClick={() => setTab("board")} style={{ padding: "9px 20px", borderRadius: 7, fontSize: 13, fontWeight: 600, cursor: "pointer", background: tab === "board" ? "#fff" : "transparent", color: tab === "board" ? "var(--blue)" : "var(--slate)" }}>Work Board</div>
-        <div onClick={() => setTab("attendance")} style={{ padding: "9px 20px", borderRadius: 7, fontSize: 13, fontWeight: 600, cursor: "pointer", background: tab === "attendance" ? "#fff" : "transparent", color: tab === "attendance" ? "var(--blue)" : "var(--slate)" }}>Attendance</div>
+        <div onClick={() => setTab("board")} style={{ padding: "9px 20px", borderRadius: 7, fontSize: 13, fontWeight: 600, cursor: "pointer", background: tab === "board" ? "var(--card-bg, #fff)" : "transparent", color: tab === "board" ? "var(--blue)" : "var(--muted)" }}>Work Board</div>
+        <div onClick={() => setTab("attendance")} style={{ padding: "9px 20px", borderRadius: 7, fontSize: 13, fontWeight: 600, cursor: "pointer", background: tab === "attendance" ? "var(--card-bg, #fff)" : "transparent", color: tab === "attendance" ? "var(--blue)" : "var(--muted)" }}>Attendance</div>
       </div>
 
       {tab === "board" ? (
-        <div style={{ background: "#fff", border: "1px solid var(--border)", borderRadius: 12, overflow: "hidden" }}>
+        <div style={{ background: "var(--card-bg, #fff)", border: "1px solid var(--border)", borderRadius: 12, overflow: "hidden" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
             <thead style={{ background: "var(--bg)" }}>
               <tr>
@@ -48,14 +52,14 @@ export default function ManagerHome() {
                 return (
                   <tr key={e.id} style={{ borderTop: "1px solid var(--border)" }}>
                     <td style={{ padding: "12px 16px" }}>
-                      <div style={{ fontWeight: 600, color: "var(--text)" }}>{e.name}</div>
+                      <div style={{ fontWeight: 600, color: "var(--navy)" }}>{e.name}</div>
                       <div style={{ fontSize: 11, color: "var(--muted)" }}>{e.id}</div>
                     </td>
-                    <td style={{ padding: "12px 16px", color: "var(--slate)" }}>{e.dept}</td>
+                    <td style={{ padding: "12px 16px", color: "var(--text)" }}>{e.dept}</td>
                     <td style={{ padding: "12px 16px", color: task ? "var(--text)" : "var(--muted)" }}>
                       {task ? task.productName : "No task assigned"}
                     </td>
-                    <td style={{ padding: "12px 16px", color: "var(--slate)" }}>{task ? task.qty.toLocaleString() : "—"}</td>
+                    <td style={{ padding: "12px 16px", color: "var(--text)" }}>{task ? task.qty.toLocaleString() : "—"}</td>
                     <td style={{ padding: "12px 16px" }}>
                       {task ? <span className={`badge ${taskTone[task.status]}`}>{task.status}</span> : <span className="badge badge-blue" style={{ opacity: 0.5 }}>Idle</span>}
                     </td>
@@ -73,7 +77,7 @@ export default function ManagerHome() {
           </table>
         </div>
       ) : (
-        <div style={{ background: "#fff", border: "1px solid var(--border)", borderRadius: 12, overflow: "hidden" }}>
+        <div style={{ background: "var(--card-bg, #fff)", border: "1px solid var(--border)", borderRadius: 12, overflow: "hidden" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
             <thead style={{ background: "var(--bg)" }}>
               <tr>
@@ -86,12 +90,12 @@ export default function ManagerHome() {
               {employees.map((e) => (
                 <tr key={e.id} style={{ borderTop: "1px solid var(--border)" }}>
                   <td style={{ padding: "12px 16px" }}>
-                    <div style={{ fontWeight: 600, color: "var(--text)" }}>{e.name}</div>
+                    <div style={{ fontWeight: 600, color: "var(--navy)" }}>{e.name}</div>
                     <div style={{ fontSize: 11, color: "var(--muted)" }}>{e.id}</div>
                   </td>
-                  <td style={{ padding: "12px 16px", color: "var(--slate)" }}>{e.dept}</td>
+                  <td style={{ padding: "12px 16px", color: "var(--text)" }}>{e.dept}</td>
                   <td style={{ padding: "12px 16px" }}><span className={`badge ${attTone[e.status]}`}>{e.status}</span></td>
-                  <td style={{ padding: "12px 16px", fontWeight: 600, color: "var(--text)" }}>{e.production.toLocaleString()}</td>
+                  <td style={{ padding: "12px 16px", fontWeight: 600, color: "var(--navy)" }}>{e.production.toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>

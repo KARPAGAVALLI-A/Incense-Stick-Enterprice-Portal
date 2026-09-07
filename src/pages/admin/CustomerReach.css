@@ -1,0 +1,15 @@
+.reach-page { maxWidth: 1100px; }
+
+.reach-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+
+.reach-kpi-card { background: var(--card-bg, #fff); border: 1px solid var(--border); border-radius: 14px; padding: 20px; position: relative; overflow: hidden; }
+
+.reach-kpi-card.gold { border-top: 4px solid #F59E0B; }
+.reach-kpi-card.blue { border-top: 4px solid #2563EB; }
+.reach-kpi-card.green { border-top: 4px solid #10B981; }
+.reach-kpi-card.purple { border-top: 4px solid #8B5CF6; }
+
+.rk-icon { font-size: 24px; margin-bottom: 8px; }
+.rk-val { font-size: 24px; font-weight: 800; color: var(--navy); }
+.rk-lbl { font-size: 12px; font-weight: 600; color: var(--muted); margin-top: 2px; }
+.rk-sub { font-size: 11px; font-weight: 700; color: #10B981; margin-top: 6px; }

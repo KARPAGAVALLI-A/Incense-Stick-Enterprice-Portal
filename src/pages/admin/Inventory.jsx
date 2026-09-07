@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { INVENTORY_ITEMS, WAREHOUSES } from "../../data/mockData";
 import { useSettings } from "../../context/SettingsContext";
 import Pagination from "../../components/Pagination";
+import ProductQrScanner from "../../components/ProductQrScanner";
 
 const toneClass = { green: "badge-green", amber: "badge-amber", red: "badge-red" };
 
@@ -11,6 +12,7 @@ export default function Inventory({ readOnly = false }) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newProduct, setNewProduct] = useState({ name: "", warehouse: WAREHOUSES[0].name, stock: "", reorderLevel: "" });
   const [selectedWh, setSelectedWh] = useState(WAREHOUSES[0].id);
+  const [activeQrProduct, setActiveQrProduct] = useState(null);
 
   const { t } = useSettings();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -38,7 +40,6 @@ export default function Inventory({ readOnly = false }) {
   const outCount = items.filter((i) => i.tone === "red").length;
   const lowCount = items.filter((i) => i.tone === "amber").length;
   const inStockCount = items.filter((i) => i.tone === "green").length;
-  const alerts = items.filter((i) => i.tone !== "green");
 
   function handleDelete(id) {
     if (!window.confirm("Remove this product from inventory?")) return;
@@ -69,7 +70,10 @@ export default function Inventory({ readOnly = false }) {
           <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--navy)" }}>🏬 {t("inventory")} &amp; Warehouse</h1>
           <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>Live stock across all warehouse locations</p>
         </div>
-        {!readOnly && <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>➕ Add Product</button>}
+        <div style={{ display: "flex", gap: 10 }}>
+          <button className="btn btn-outline" onClick={() => setActiveQrProduct(items[0])}>📷 Scan Box QR Code</button>
+          {!readOnly && <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>➕ Add Product</button>}
+        </div>
       </div>
 
       {/* KPI cards */}
@@ -107,7 +111,7 @@ export default function Inventory({ readOnly = false }) {
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 640 }}>
               <thead style={{ background: "var(--bg)" }}>
                 <tr>
-                  {["Product", "Warehouse", "Stock", "Reorder Level", "Status", !readOnly ? "Actions" : null].filter(Boolean).map((h) => (
+                  {["Product", "Warehouse", "Stock", "Reorder Level", "QR Price", "Status", !readOnly ? "Actions" : null].filter(Boolean).map((h) => (
                     <th key={h} style={{ textAlign: "left", padding: "11px 16px", fontSize: 10.5, fontWeight: 600, color: "var(--muted)", textTransform: "uppercase" }}>{h}</th>
                   ))}
                 </tr>
@@ -134,6 +138,11 @@ export default function Inventory({ readOnly = false }) {
                       </div>
                     </td>
                     <td style={{ padding: "12px 16px", color: "var(--muted)" }}>{it.reorderLevel}</td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <button className="btn btn-outline" style={{ fontSize: 11, padding: "3px 8px" }} onClick={() => setActiveQrProduct(it)}>
+                        📷 QR Offer
+                      </button>
+                    </td>
                     <td style={{ padding: "12px 16px" }}><span className={`badge ${toneClass[it.tone]}`}>{it.status}</span></td>
                     {!readOnly && (
                       <td style={{ padding: "12px 16px" }}>
@@ -198,6 +207,11 @@ export default function Inventory({ readOnly = false }) {
           </div>
         </div>
       </div>
+
+      {/* QR Code Scanner & Audio Price Announcement Modal */}
+      {activeQrProduct && (
+        <ProductQrScanner product={activeQrProduct} onClose={() => setActiveQrProduct(null)} />
+      )}
     </div>
   );
 }

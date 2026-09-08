@@ -76,31 +76,55 @@ export const PRODUCTS = [
     id: "PRD-001",
     name: "Rose Sandalwood Premium",
     icon: "🪔",
+    status: "Active Production",
+    tone: "blue",
+    pct: 78,
+    inProd: 45000,
+    target: 60000,
+    stock: 28000,
+    orders: 35000,
+    toComplete: 7000,
     materials: [
-      { id: "RM-01", name: "Bamboo Sticks (9-inch)", stock: 50, reorder: 100, unit: "kg", tone: "red" },
-      { id: "RM-02", name: "Jigat Powder (Binder)", stock: 30, reorder: 80, unit: "kg", tone: "amber" },
-      { id: "RM-03", name: "Rose Essential Oil", stock: 12, reorder: 10, unit: "L", tone: "green" },
-      { id: "RM-04", name: "Sandalwood Powder", stock: 45, reorder: 30, unit: "kg", tone: "green" },
-      { id: "RM-05", name: "Charcoal Powder", stock: 200, reorder: 150, unit: "kg", tone: "green" }
+      { id: "RM-01", name: "Bamboo Sticks (9-inch)", need: "100 kg", avail: "50 kg", status: "Low Stock", tone: "red" },
+      { id: "RM-02", name: "Jigat Powder (Binder)", need: "80 kg", avail: "30 kg", status: "Reorder", tone: "amber" },
+      { id: "RM-03", name: "Rose Essential Oil", need: "10 L", avail: "12 L", status: "In Stock", tone: "green" },
+      { id: "RM-04", name: "Sandalwood Powder", need: "30 kg", avail: "45 kg", status: "In Stock", tone: "green" },
+      { id: "RM-05", name: "Charcoal Powder", need: "150 kg", avail: "200 kg", status: "In Stock", tone: "green" }
     ]
   },
   {
     id: "PRD-002",
     name: "Jasmine Natural Masala",
     icon: "🌸",
+    status: "In Stock",
+    tone: "green",
+    pct: 92,
+    inProd: 32000,
+    target: 35000,
+    stock: 22000,
+    orders: 25000,
+    toComplete: 3000,
     materials: [
-      { id: "RM-06", name: "Jasmine Extract Oil", stock: 8, reorder: 15, unit: "L", tone: "amber" },
-      { id: "RM-07", name: "White Chips Powder", stock: 90, reorder: 60, unit: "kg", tone: "green" },
-      { id: "RM-08", name: "Bamboo Sticks (8-inch)", stock: 120, reorder: 100, unit: "kg", tone: "green" }
+      { id: "RM-06", name: "Jasmine Extract Oil", need: "15 L", avail: "8 L", status: "Low Stock", tone: "amber" },
+      { id: "RM-07", name: "White Chips Powder", need: "60 kg", avail: "90 kg", status: "In Stock", tone: "green" },
+      { id: "RM-08", name: "Bamboo Sticks (8-inch)", need: "100 kg", avail: "120 kg", status: "In Stock", tone: "green" }
     ]
   },
   {
     id: "PRD-003",
     name: "Cedarwood Dhoop Stick",
     icon: "🪵",
+    status: "Shortage Alert",
+    tone: "red",
+    pct: 45,
+    inProd: 12000,
+    target: 25000,
+    stock: 8000,
+    orders: 18000,
+    toComplete: 10000,
     materials: [
-      { id: "RM-09", name: "Cedarwood Oil", stock: 5, reorder: 10, unit: "L", tone: "red" },
-      { id: "RM-10", name: "Coumarin Powder", stock: 25, reorder: 20, unit: "kg", tone: "green" }
+      { id: "RM-09", name: "Cedarwood Oil", need: "10 L", avail: "5 L", status: "Critical Shortage", tone: "red" },
+      { id: "RM-10", name: "Coumarin Powder", need: "20 kg", avail: "25 kg", status: "In Stock", tone: "green" }
     ]
   }
 ];

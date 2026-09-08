@@ -7,13 +7,13 @@ const toneClass = { blue: "badge-blue", green: "badge-green", red: "badge-red", 
 
 // Sample Calendar-Based Production Batch Logs
 const INITIAL_BATCH_LOGS = [
-  { id: "BAT-2026-0810-01", date: "2026-08-10", shift: "morning", prodId: "P001", prodName: "Chandan Premium 100g", qty: 1500, defect: "0.4%", status: "Completed", operator: "Ravi Kumar" },
-  { id: "BAT-2026-0810-02", date: "2026-08-10", shift: "evening", prodId: "P002", prodName: "Rose Gold Cone 50p", qty: 2200, defect: "0.2%", status: "In Progress", operator: "Priya Sharma" },
-  { id: "BAT-2026-0809-01", date: "2026-08-09", shift: "morning", prodId: "P003", prodName: "Jasmine Mogra Stick", qty: 1800, defect: "0.6%", status: "Completed", operator: "Suresh P" },
-  { id: "BAT-2026-0809-02", date: "2026-08-09", shift: "night", prodId: "P004", prodName: "Lavender Calm Dhoop", qty: 950, defect: "0.1%", status: "Completed", operator: "Anita Roy" },
-  { id: "BAT-2026-0808-01", date: "2026-08-08", shift: "morning", prodId: "P001", prodName: "Chandan Premium 100g", qty: 1600, defect: "0.3%", status: "Completed", operator: "Ravi Kumar" },
-  { id: "BAT-2026-0808-02", date: "2026-08-08", shift: "evening", prodId: "P005", prodName: "Sambrani Cup Pack", qty: 1400, defect: "0.5%", status: "Completed", operator: "Karthik M" },
-  { id: "BAT-2026-0807-01", date: "2026-08-07", shift: "morning", prodId: "P002", prodName: "Rose Gold Cone 50p", qty: 2000, defect: "0.3%", status: "Completed", operator: "Priya Sharma" }
+  { id: "BAT-2026-0810-01", date: "2026-08-10", shift: "morning", prodId: "PRD-001", prodName: "Rose Sandalwood Premium", qty: 1500, defect: "0.4%", status: "Completed", operator: "Ravi Kumar" },
+  { id: "BAT-2026-0810-02", date: "2026-08-10", shift: "evening", prodId: "PRD-002", prodName: "Jasmine Natural Masala", qty: 2200, defect: "0.2%", status: "In Progress", operator: "Priya Sharma" },
+  { id: "BAT-2026-0809-01", date: "2026-08-09", shift: "morning", prodId: "PRD-003", prodName: "Cedarwood Dhoop Stick", qty: 1800, defect: "0.6%", status: "Completed", operator: "Suresh P" },
+  { id: "BAT-2026-0809-02", date: "2026-08-09", shift: "night", prodId: "PRD-001", prodName: "Rose Sandalwood Premium", qty: 950, defect: "0.1%", status: "Completed", operator: "Anita Roy" },
+  { id: "BAT-2026-0808-01", date: "2026-08-08", shift: "morning", prodId: "PRD-001", prodName: "Rose Sandalwood Premium", qty: 1600, defect: "0.3%", status: "Completed", operator: "Ravi Kumar" },
+  { id: "BAT-2026-0808-02", date: "2026-08-08", shift: "evening", prodId: "PRD-002", prodName: "Jasmine Natural Masala", qty: 1400, defect: "0.5%", status: "Completed", operator: "Karthik M" },
+  { id: "BAT-2026-0807-01", date: "2026-08-07", shift: "morning", prodId: "PRD-002", prodName: "Jasmine Natural Masala", qty: 2000, defect: "0.3%", status: "Completed", operator: "Priya Sharma" }
 ];
 
 export default function Production() {
@@ -26,7 +26,7 @@ export default function Production() {
   const [selectedDate, setSelectedDate] = useState("2026-08-10");
 
   const selectedIndex = id ? PRODUCTS.findIndex((prod) => prod.id === id) : 0;
-  const p = PRODUCTS[selectedIndex === -1 ? 0 : selectedIndex];
+  const p = PRODUCTS[selectedIndex === -1 ? 0 : selectedIndex] || PRODUCTS[0];
 
   // 2. useCallback: Date Selector Handlers
   const handleDateChange = useCallback((e) => {
@@ -53,7 +53,7 @@ export default function Production() {
 
   // Aggregate quantity for filtered batches
   const totalBatchQty = useMemo(() => {
-    return filteredBatches.reduce((acc, b) => acc + b.qty, 0);
+    return filteredBatches.reduce((acc, b) => acc + (b.qty || 0), 0);
   }, [filteredBatches]);
 
   return (
@@ -72,7 +72,7 @@ export default function Production() {
       <div style={{
         background: "var(--card-bg, #fff)", border: "1px solid var(--border)",
         borderRadius: 14, padding: "16px 20px", marginBottom: 24,
-        display: "flex", flexWrap: "wrap", alignItems: "center", justifyBetween: "space-between", gap: 16,
+        display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 16,
         boxShadow: "0 2px 6px rgba(0,0,0,0.03)"
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -161,9 +161,9 @@ export default function Production() {
             <div style={{ width: 36, height: 36, borderRadius: 9, background: "linear-gradient(135deg,#DBEAFE,#EFF6FF)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, marginBottom: 8 }}>{prod.icon}</div>
             <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text)", marginBottom: 6 }}>{prod.name}</div>
             <div style={{ height: 5, background: "var(--border)", borderRadius: 99, overflow: "hidden", marginBottom: 4 }}>
-              <div style={{ height: "100%", width: `${prod.pct}%`, background: prod.tone === "green" ? "var(--green)" : prod.tone === "red" ? "var(--red)" : "var(--blue)" }} />
+              <div style={{ height: "100%", width: `${prod.pct || 0}%`, background: prod.tone === "green" ? "var(--green)" : prod.tone === "red" ? "var(--red)" : "var(--blue)" }} />
             </div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "var(--muted)" }}>{prod.status} · {prod.pct}%</div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: "var(--muted)" }}>{prod.status || "Active"} · {prod.pct || 0}%</div>
           </div>
         ))}
       </div>
@@ -176,7 +176,7 @@ export default function Production() {
             <div style={{ fontSize: 17, fontWeight: 700, color: "var(--navy)" }}>{p.name}</div>
             <div style={{ fontSize: 12, color: "var(--muted)" }}>Product Code: {p.id}</div>
           </div>
-          <div style={{ marginLeft: "auto" }}><span className={`badge ${toneClass[p.tone]}`}>{p.status}</span></div>
+          <div style={{ marginLeft: "auto" }}><span className={`badge ${toneClass[p.tone || "blue"]}`}>{p.status || "Active"}</span></div>
         </div>
 
         <div style={{ padding: 22 }}>
@@ -184,22 +184,22 @@ export default function Production() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14, marginBottom: 22 }}>
             <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 14, background: "var(--card-bg)" }}>
               <div style={{ fontSize: 10.5, fontWeight: 600, color: "var(--muted)", textTransform: "uppercase" }}>{t("inProduction")}</div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: "var(--navy)", marginTop: 4 }}>{p.inProd.toLocaleString()}</div>
-              <div style={{ fontSize: 11, color: "var(--muted)" }}>of {p.target.toLocaleString()} target</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: "var(--navy)", marginTop: 4 }}>{(p.inProd || 0).toLocaleString()}</div>
+              <div style={{ fontSize: 11, color: "var(--muted)" }}>of {(p.target || 0).toLocaleString()} target</div>
             </div>
             <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 14, background: "var(--card-bg)" }}>
               <div style={{ fontSize: 10.5, fontWeight: 600, color: "var(--muted)", textTransform: "uppercase" }}>{t("stockInHand")}</div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: "var(--navy)", marginTop: 4 }}>{p.stock.toLocaleString()}</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: "var(--navy)", marginTop: 4 }}>{(p.stock || 0).toLocaleString()}</div>
               <div style={{ fontSize: 11, color: "var(--muted)" }}>ready to dispatch</div>
             </div>
             <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 14, background: "var(--card-bg)" }}>
               <div style={{ fontSize: 10.5, fontWeight: 600, color: "var(--muted)", textTransform: "uppercase" }}>{t("ordersPending")}</div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: "var(--navy)", marginTop: 4 }}>{p.orders.toLocaleString()}</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: "var(--navy)", marginTop: 4 }}>{(p.orders || 0).toLocaleString()}</div>
               <div style={{ fontSize: 11, color: "var(--muted)" }}>total units ordered</div>
             </div>
             <div style={{ border: "1px solid var(--border)", background: "var(--blue-xs)", borderRadius: 12, padding: 14 }}>
               <div style={{ fontSize: 10.5, fontWeight: 600, color: "var(--muted)", textTransform: "uppercase" }}>{t("leftToComplete")}</div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: "var(--blue)", marginTop: 4 }}>{p.toComplete.toLocaleString()}</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: "var(--blue)", marginTop: 4 }}>{(p.toComplete || 0).toLocaleString()}</div>
               <div style={{ fontSize: 11, color: "var(--muted)" }}>orders − stock in hand</div>
             </div>
           </div>
@@ -216,12 +216,12 @@ export default function Production() {
                 </tr>
               </thead>
               <tbody>
-                {p.materials.map((m) => (
+                {(p.materials || []).map((m) => (
                   <tr key={m.name} style={{ borderBottom: "1px solid var(--border)" }}>
                     <td style={{ padding: "10px 12px", fontWeight: 600, color: "var(--text)" }}>{m.name}</td>
-                    <td style={{ padding: "10px 12px", color: "var(--muted)" }}>{m.need}</td>
-                    <td style={{ padding: "10px 12px", color: "var(--muted)" }}>{m.avail}</td>
-                    <td style={{ padding: "10px 12px" }}><span className={`badge ${toneClass[m.tone]}`}>{m.status}</span></td>
+                    <td style={{ padding: "10px 12px", color: "var(--muted)" }}>{m.need || m.reorder || "—"}</td>
+                    <td style={{ padding: "10px 12px", color: "var(--muted)" }}>{m.avail || m.stock || "—"}</td>
+                    <td style={{ padding: "10px 12px" }}><span className={`badge ${toneClass[m.tone || "blue"]}`}>{m.status || "In Stock"}</span></td>
                   </tr>
                 ))}
               </tbody>

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { useSearchParams, useLocation } from "react-router-dom";
+import { useSearchParams, useLocation, Link } from "react-router-dom";
 import { useData } from "../../context/DataContext";
 import { useNotifications } from "../../context/NotificationContext";
 import { useSettings } from "../../context/SettingsContext";
@@ -50,11 +50,19 @@ export default function Orders({ readOnly = false }) {
 
   return (
     <div>
-      <div style={{ marginBottom: 20 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--navy)" }}>🚚 {t("orders")}</h1>
-        <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
-          {readOnly ? "Live status of every customer order." : "Track and update every customer order's status."} · Route: <code>{location.pathname}</code>
-        </p>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
+        <div>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--navy)" }}>🚚 {t("orders")}</h1>
+          <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>
+            {readOnly ? "Live status of every customer order." : "Track and update every customer order's status."} · Route: <code>{location.pathname}</code>
+          </p>
+        </div>
+        <Link
+          to={location.pathname.startsWith("/manager") ? "/manager/orders/track" : "/admin/orders/track"}
+          style={{ padding: "9px 18px", borderRadius: 10, background: "#2563EB", color: "#FFFFFF", fontSize: 13, fontWeight: 700, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, boxShadow: "0 4px 12px rgba(37,99,235,0.25)" }}
+        >
+          🌐 Open Live Order &amp; Vehicle Tracking Dashboard →
+        </Link>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 20 }}>

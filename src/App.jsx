@@ -24,6 +24,7 @@ import ProfitLoss from "./pages/admin/ProfitLoss";
 import TeamOverview from "./pages/admin/TeamOverview";
 import Settings from "./pages/admin/Settings";
 import CustomerReach from "./pages/admin/CustomerReach";
+import OrderLiveTrackingPage from "./pages/admin/OrderLiveTrackingPage";
 
 import ManagerLayout from "./pages/manager/ManagerLayout";
 import ManagerHome from "./pages/manager/ManagerHome";
@@ -62,6 +63,7 @@ export default function App() {
                 <Route path="inventory" element={<Inventory />} />
                 <Route path="inventory/:id" element={<InventoryDetail />} />
                 <Route path="orders" element={<Orders />} />
+                <Route path="orders/track" element={<OrderLiveTrackingPage />} />
                 <Route path="stock" element={<Stock />} />
                 <Route path="team" element={<TeamOverview />} />
                 <Route path="profit-loss" element={<ProfitLoss />} />
@@ -72,6 +74,7 @@ export default function App() {
                 <Route index element={<ManagerHome />} />
                 <Route path="production" element={<Production />} />
                 <Route path="orders" element={<ManagerOrders />} />
+                <Route path="orders/track" element={<OrderLiveTrackingPage />} />
                 <Route path="inventory" element={<ManagerInventory />} />
                 <Route path="stock" element={<ManagerStock />} />
               </Route>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { useData } from "../../context/DataContext";
 import { useNotifications } from "../../context/NotificationContext";
 import WeatherSentinel from "../../components/WeatherSentinel";
@@ -23,9 +24,14 @@ export default function ManagerHome() {
 
   return (
     <div>
-      <div style={{ marginBottom: 20 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--navy)" }}>Employee Work &amp; Weather Operations</h1>
-        <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>See what every employee is working on and monitor rain work-stop alerts</p>
+      <div style={{ marginBottom: 20, display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
+        <div>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--navy)" }}>Employee Work &amp; Weather Operations</h1>
+          <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>See what every employee is working on and monitor rain work-stop alerts</p>
+        </div>
+        <Link to="/manager/production" className="btn btn-primary" style={{ fontSize: 12.5, padding: "8px 16px", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}>
+          ⚙️ Production Overview & Batch Logs →
+        </Link>
       </div>
 
       {/* 🌧️ AI WEATHER SENTINEL & RAIN WORK-STOP CARD */}

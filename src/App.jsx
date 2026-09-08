@@ -72,6 +72,7 @@ export default function App() {
 
               <Route path="/manager" element={<ManagerLayout />}>
                 <Route index element={<ManagerHome />} />
+                <Route path="production" element={<Production />} />
                 <Route path="orders" element={<ManagerOrders />} />
                 <Route path="inventory" element={<ManagerInventory />} />
                 <Route path="stock" element={<ManagerStock />} />

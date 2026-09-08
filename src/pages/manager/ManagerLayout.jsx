@@ -41,6 +41,9 @@ export default function ManagerLayout() {
           <NavLink to="/manager/orders" className={({ isActive }) => "nav-item" + (isActive ? " active" : "")}>
             <span className="icon">🚚</span> {t("orders")}
           </NavLink>
+          <NavLink to="/manager/production" className={({ isActive }) => "nav-item" + (isActive ? " active" : "")}>
+            <span className="icon">⚙️</span> {t("production")}
+          </NavLink>
           <NavLink to="/manager/inventory" className={({ isActive }) => "nav-item" + (isActive ? " active" : "")}>
             <span className="icon">🏬</span> {t("inventory")}
           </NavLink>

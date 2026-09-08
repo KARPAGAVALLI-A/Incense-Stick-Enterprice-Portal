@@ -24,7 +24,6 @@ import ProfitLoss from "./pages/admin/ProfitLoss";
 import TeamOverview from "./pages/admin/TeamOverview";
 import Settings from "./pages/admin/Settings";
 import CustomerReach from "./pages/admin/CustomerReach";
-import IndiaFleetGpsMap from "./components/IndiaFleetGpsMap";
 
 import ManagerLayout from "./pages/manager/ManagerLayout";
 import ManagerHome from "./pages/manager/ManagerHome";
@@ -55,7 +54,6 @@ export default function App() {
 
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<Dashboard />} />
-                <Route path="fleet-gps" element={<IndiaFleetGpsMap />} />
                 <Route path="customer-reach" element={<CustomerReach />} />
                 <Route path="employees" element={<Employees />} />
                 <Route path="employees/:id" element={<EmployeeDetail />} />

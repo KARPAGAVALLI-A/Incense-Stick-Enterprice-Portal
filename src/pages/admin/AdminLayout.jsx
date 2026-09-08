@@ -38,9 +38,6 @@ export default function AdminLayout() {
           <NavLink to="/admin" end className={({ isActive }) => "nav-item" + (isActive ? " active" : "")}>
             <span className="icon">📊</span> {t("dashboard")}
           </NavLink>
-          <NavLink to="/admin/fleet-gps" className={({ isActive }) => "nav-item" + (isActive ? " active" : "")}>
-            <span className="icon">🗺️</span> India Fleet GPS
-          </NavLink>
           <NavLink to="/admin/customer-reach" className={({ isActive }) => "nav-item" + (isActive ? " active" : "")}>
             <span className="icon">🌐</span> Customer Reach
           </NavLink>

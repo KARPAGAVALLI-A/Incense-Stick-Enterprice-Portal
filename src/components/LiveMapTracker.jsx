@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./LiveMapTracker.css";
+import indiaMapImg from "../assets/india-map-order.png";
 
-// City coordinates mapped specifically for the India Map image (0 to 1 normalized coordinates)
+// City coordinates mapped specifically for the uploaded India Map image
 const CITY_COORDS = {
   "Salem (Factory)": { x: 0.35, y: 0.77, state: "Tamil Nadu" },
   "Chennai (Madras)": { x: 0.44, y: 0.73, state: "Tamil Nadu" },
@@ -27,16 +28,15 @@ export default function LiveMapTracker({ order, onClose }) {
   const [etaMinutes, setEtaMinutes] = useState(45);
   const [selectedRoute, setSelectedRoute] = useState(SAMPLE_ROUTES[0]);
   const [gpsCoords, setGpsCoords] = useState({ lat: "11.6643° N", lng: "78.1460° E" });
-  const [zoomLevel, setZoomLevel] = useState(1);
 
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  // Load the user's specific India map image
+  // Preload the imported India Map image asset
   useEffect(() => {
     const img = new Image();
-    img.src = "/india-map-order.png";
+    img.src = indiaMapImg;
     img.onload = () => {
       imageRef.current = img;
       setImageLoaded(true);
@@ -69,7 +69,6 @@ export default function LiveMapTracker({ order, onClose }) {
       setSpeed(Math.floor(58 + Math.random() * 12));
       setEtaMinutes((prev) => Math.max(4, prev - (Math.random() > 0.6 ? 1 : 0)));
 
-      // Simulate slight coordinate movement
       setGpsCoords({
         lat: `${(11.6 + Math.random() * 0.8).toFixed(4)}° N`,
         lng: `${(78.1 + Math.random() * 0.8).toFixed(4)}° E`
@@ -92,12 +91,7 @@ export default function LiveMapTracker({ order, onClose }) {
     // 1. Draw Map Image
     if (imageRef.current && imageLoaded) {
       ctx.drawImage(imageRef.current, 0, 0, w, h);
-
-      // Semi-transparent overlay to make GPS markers pop
-      ctx.fillStyle = "rgba(15, 23, 42, 0.08)";
-      ctx.fillRect(0, 0, w, h);
     } else {
-      // Fallback background grid if loading
       ctx.fillStyle = "#E2E8F0";
       ctx.fillRect(0, 0, w, h);
       ctx.fillStyle = "#64748B";
@@ -114,15 +108,14 @@ export default function LiveMapTracker({ order, onClose }) {
     const endX = destPoint.x * w;
     const endY = destPoint.y * h;
 
-    // Control point for curved route line
     const midX = (startX + endX) / 2 + 25;
     const midY = (startY + endY) / 2 - 35;
 
-    // 3. Draw Full Planned Route Path (Dashed Glow Line)
+    // 3. Draw Route Path Line
     ctx.beginPath();
     ctx.moveTo(startX, startY);
     ctx.quadraticCurveTo(midX, midY, endX, endY);
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
     ctx.lineWidth = 6;
     ctx.stroke();
 
@@ -133,17 +126,16 @@ export default function LiveMapTracker({ order, onClose }) {
     ctx.strokeStyle = "#3B82F6";
     ctx.lineWidth = 4;
     ctx.stroke();
-    ctx.setLineDash([]); // Reset line dash
+    ctx.setLineDash([]);
 
-    // 4. Calculate Current Position of Moving Truck (Quadratic Bezier)
+    // 4. Calculate Current Position of Moving Truck
     const t = progress;
     const curX = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * midX + t * t * endX;
     const curY = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * midY + t * t * endY;
 
-    // Traversed path highlight (Solid Green / Blue line)
+    // Traversed path highlight (Solid Green)
     ctx.beginPath();
     ctx.moveTo(startX, startY);
-    // Draw partial quadratic curve up to current t
     const subMidX = (1 - t / 2) * startX + (t / 2) * midX;
     const subMidY = (1 - t / 2) * startY + (t / 2) * midY;
     ctx.quadraticCurveTo(subMidX, subMidY, curX, curY);
@@ -151,23 +143,19 @@ export default function LiveMapTracker({ order, onClose }) {
     ctx.lineWidth = 5;
     ctx.stroke();
 
-    // 5. Draw Origin and Destination Pin Markers
-    // Origin Pin (Green)
+    // 5. Draw Origin and Destination Pins
     drawMapPin(ctx, startX, startY, "#10B981", `🚩 ${selectedRoute.origin}`);
-    // Destination Pin (Red)
     drawMapPin(ctx, endX, endY, "#EF4444", `🎯 ${selectedRoute.dest}`);
 
     // 6. Draw Moving Live Truck Marker
     ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
     ctx.shadowBlur = 12;
 
-    // Radar pulse ring around truck
     ctx.beginPath();
     ctx.arc(curX, curY, 18, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(37, 99, 235, 0.25)";
+    ctx.fillStyle = "rgba(37, 99, 235, 0.3)";
     ctx.fill();
 
-    // Truck outer badge
     ctx.beginPath();
     ctx.arc(curX, curY, 13, 0, Math.PI * 2);
     ctx.fillStyle = "#1E40AF";
@@ -176,14 +164,13 @@ export default function LiveMapTracker({ order, onClose }) {
     ctx.fill();
     ctx.stroke();
 
-    // Truck emoji
     ctx.shadowBlur = 0;
     ctx.fillStyle = "#FFF";
     ctx.font = "13px sans-serif";
     ctx.fillText("🚚", curX - 7, curY + 4);
 
-    // Truck Info Tooltip Tag
-    const tagWidth = 140;
+    // Truck Tooltip Tag
+    const tagWidth = 145;
     const tagHeight = 32;
     const tagX = Math.min(Math.max(curX - tagWidth / 2, 10), w - tagWidth - 10);
     const tagY = curY - 45;
@@ -205,7 +192,6 @@ export default function LiveMapTracker({ order, onClose }) {
 
   }, [progress, selectedRoute, imageLoaded]);
 
-  // Helper helper to draw location pin badges on map
   function drawMapPin(ctx, x, y, color, label) {
     ctx.shadowColor = "rgba(0,0,0,0.3)";
     ctx.shadowBlur = 8;
@@ -219,11 +205,10 @@ export default function LiveMapTracker({ order, onClose }) {
     ctx.stroke();
 
     ctx.shadowBlur = 0;
-    ctx.fillStyle = "#0F172A";
     ctx.font = "bold 11px sans-serif";
     const txtWidth = ctx.measureText(label).width;
 
-    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.92)";
     ctx.fillRect(x - txtWidth / 2 - 4, y + 10, txtWidth + 8, 16);
     ctx.fillStyle = "#0F172A";
     ctx.fillText(label, x - txtWidth / 2, y + 22);

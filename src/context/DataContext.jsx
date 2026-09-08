@@ -54,6 +54,16 @@ export function DataProvider({ children }) {
     setEmployees(updated);
   }
 
+  function updateEmployee(id, fields) {
+    const updated = db.updateEmployee(id, fields);
+    setEmployees(updated);
+  }
+
+  function removeEmployee(id) {
+    const updated = db.removeEmployee(id);
+    setEmployees(updated);
+  }
+
   function updateOrderStatus(orderId, status) {
     setOrders((prev) =>
       prev.map((o) =>
@@ -81,7 +91,7 @@ export function DataProvider({ children }) {
   }
 
   return (
-    <DataContext.Provider value={{ employees, addEmployee, orders, updateOrderStatus, tasks, addTask, updateTaskStatus, db }}>
+    <DataContext.Provider value={{ employees, addEmployee, updateEmployee, removeEmployee, orders, updateOrderStatus, tasks, addTask, updateTaskStatus, db }}>
       {children}
     </DataContext.Provider>
   );

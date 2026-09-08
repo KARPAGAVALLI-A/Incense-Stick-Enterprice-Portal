@@ -45,6 +45,20 @@ class DatabaseService {
     return updated;
   }
 
+  updateEmployee(id, updatedFields) {
+    const list = this.getEmployees();
+    const updated = list.map((e) => (e.id === id ? { ...e, ...updatedFields } : e));
+    this.saveEmployees(updated);
+    return updated;
+  }
+
+  removeEmployee(id) {
+    const list = this.getEmployees();
+    const updated = list.filter((e) => e.id !== id);
+    this.saveEmployees(updated);
+    return updated;
+  }
+
   // --- INVENTORY CRUD ---
   getInventory() {
     try {

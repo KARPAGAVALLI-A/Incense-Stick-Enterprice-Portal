@@ -10,13 +10,15 @@ const STATUS_TONE = { Placed: "badge-blue", Processing: "badge-amber", Shipped: 
 // 50 Active Tracked Vehicles with Real Highway Bezier Routes across Tamil Nadu & South India
 const SEED_TRACKED_ORDERS = Array.from({ length: 50 }).map((_, i) => {
   const drivers = ["Shanmugam", "Kani", "Suresh Gopi", "Samy", "Muthu Kumar", "Selvakumar", "Ravi Chandran", "Venkatesh", "Anbarasu", "Saravanan"];
+  const phones = ["+91 98421 88320", "+91 97892 10394", "+91 94432 11982", "+91 98940 55120", "+91 99441 22301", "+91 98422 99011"];
   const customers = ["Sri Balaji Traders", "Devi Exports", "Annapoorna Pooja Store", "Meenakshi Agencies", "Murugan Stores", "Kavitha Enterprises", "Senthil & Co", "Vasantham Traders"];
   const products = ["Rose Sandalwood Premium", "Jasmine Natural Masala", "Cedarwood Dhoop Stick", "Chandan Supreme", "Sambrani Cup Premium"];
-  const cities = ["Salem Factory", "Coimbatore Hub", "Erode Depot", "Madurai Center", "Kovilpatti / NEC Campus", "Thoothukudi Harbour", "Tirunelveli Junction", "Chennai Port", "Bangalore Gate", "Hyderabad Outer"];
+  const cities = ["Salem Factory Depot", "Coimbatore Hub", "Erode Depot", "Madurai Center", "Kovilpatti / NEC Campus", "Thoothukudi Harbour", "Tirunelveli Junction", "Chennai Port", "Bangalore Gate", "Hyderabad Outer"];
   const regPrefixes = ["TN-54", "TN-96", "TN-30", "TN-38", "TN-58", "KA-01", "AP-09"];
 
   const idNum = i + 1;
   const driver = drivers[i % drivers.length];
+  const phone = phones[i % phones.length];
   const customer = customers[i % customers.length];
   const product = products[i % products.length];
   const origin = cities[i % cities.length];
@@ -24,8 +26,7 @@ const SEED_TRACKED_ORDERS = Array.from({ length: 50 }).map((_, i) => {
   const speed = Math.floor(35 + (i * 7) % 35);
   const statusStep = i % 4 === 3 ? "Delivered" : i % 3 === 2 ? "Shipped" : i % 2 === 1 ? "Processing" : "Placed";
 
-  // Route Waypoints (Normalized 0 to 1 map coordinates)
-  // Salem (0.38, 0.42), Chennai (0.62, 0.18), Madurai (0.40, 0.65), Kovilpatti (0.42, 0.74), Bangalore (0.35, 0.30)
+  // Route Waypoints
   const startX = 0.38;
   const startY = 0.42;
   const targetX = 0.22 + ((i * 0.041) % 0.48);
@@ -38,16 +39,17 @@ const SEED_TRACKED_ORDERS = Array.from({ length: 50 }).map((_, i) => {
     id: `ORD-20${30 + idNum}`,
     customer,
     product,
-    qty: (i + 1) * 500,
+    qty: (i + 1) * 750,
     truckNo: `${regPrefixes[i % regPrefixes.length]}-AJ-${2000 + idNum}`,
     driver,
+    phone,
     origin,
     dest,
     route: `${origin} ➔ ${dest}`,
     speed,
     baseSpeed: speed,
     status: statusStep,
-    progress: (i * 0.07) % 0.9, // starting progress along route [0, 1]
+    progress: (i * 0.07) % 0.9,
     startX,
     startY,
     ctrlX,
@@ -68,8 +70,11 @@ export default function Orders({ readOnly = false }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOrderNo, setSelectedOrderNo] = useState(1);
   const [mapStyle, setMapStyle] = useState("street");
-  const [zoomLevel, setZoomLevel] = useState(1);
+  const [zoomScale, setZoomScale] = useState(1.0); // Interactive 2D Zoom scale
   const [isLiveMoving, setIsLiveMoving] = useState(true);
+
+  // Detail Popover Modal State
+  const [detailModalOrder, setDetailModalOrder] = useState(null);
 
   const canvasRef = useRef(null);
   const animFrameIdRef = useRef(null);
@@ -107,6 +112,55 @@ export default function Orders({ readOnly = false }) {
     push("admin", `Order ${o.id} Updated`, `${o.customer}'s order is now "${next}".`);
   }
 
+  // Zoom Handlers
+  function handleZoomIn() {
+    setZoomScale((prev) => Math.min(2.5, Number((prev + 0.25).toFixed(2))));
+  }
+
+  function handleZoomOut() {
+    setZoomScale((prev) => Math.max(0.75, Number((prev - 0.25).toFixed(2))));
+  }
+
+  function handleResetZoom() {
+    setZoomScale(1.0);
+  }
+
+  // Handle Canvas Click on Vehicle Pin Markers
+  function handleCanvasClick(e) {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const clickX = (e.clientX - rect.left) * scaleX;
+    const clickY = (e.clientY - rect.top) * scaleY;
+
+    const w = canvas.width;
+    const h = canvas.height;
+
+    // Check hit collision with rendered vehicle badges
+    for (const o of filteredOrders.slice(0, 18)) {
+      const t = o.progress;
+      const sX = o.startX * w;
+      const sY = o.startY * h;
+      const cX = o.ctrlX * w;
+      const cY = o.ctrlY * h;
+      const tX = o.targetX * w;
+      const tY = o.targetY * h;
+
+      const px = (1 - t) * (1 - t) * sX + 2 * (1 - t) * t * cX + t * t * tX;
+      const py = (1 - t) * (1 - t) * sY + 2 * (1 - t) * t * cY + t * t * tY;
+
+      const dist = Math.hypot(clickX - px, clickY - py);
+      if (dist < 45) {
+        setSelectedOrderNo(o.orderNo);
+        setDetailModalOrder(o);
+        return;
+      }
+    }
+  }
+
   // 60 FPS Real-time Continuous Vehicle GPS Movement Loop
   useEffect(() => {
     let lastTime = performance.now();
@@ -122,15 +176,13 @@ export default function Orders({ readOnly = false }) {
           prevOrders.map((o) => {
             if (o.status === "Delivered") return { ...o, speed: 0 };
 
-            // Advance progress continuously along Bezier path
-            let speedFactor = o.baseSpeed / 3600; // normalized speed
+            let speedFactor = o.baseSpeed / 3600;
             let newProgress = o.progress + speedFactor * delta * 4;
 
             if (newProgress >= 0.98) {
-              newProgress = 0.02; // Loop back to start
+              newProgress = 0.02;
             }
 
-            // Calculate live lat/lng changes smoothly
             const curLat = (8.8 + newProgress * 3.8 + (o.orderNo % 3) * 0.2).toFixed(4);
             const curLng = (76.8 + newProgress * 2.9 + (o.orderNo % 2) * 0.3).toFixed(4);
 
@@ -145,7 +197,6 @@ export default function Orders({ readOnly = false }) {
         );
       }
 
-      // Render Canvas
       renderMapCanvas();
       animFrameIdRef.current = requestAnimationFrame(animateLoop);
     };
@@ -155,9 +206,9 @@ export default function Orders({ readOnly = false }) {
     return () => {
       if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
     };
-  }, [isLiveMoving, mapStyle, selectedOrderNo, filteredOrders]);
+  }, [isLiveMoving, mapStyle, zoomScale, selectedOrderNo, filteredOrders]);
 
-  // Render Canvas with Smooth Moving Vehicles
+  // Render Canvas with Smooth Zooming and Moving Vehicles
   function renderMapCanvas() {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -167,10 +218,35 @@ export default function Orders({ readOnly = false }) {
 
     ctx.clearRect(0, 0, w, h);
 
+    // Save context state for 2D Zoom Transform
+    ctx.save();
+
+    // Center zoom around active selected vehicle position or canvas center
+    const selVehForZoom = trackedOrders.find((o) => o.orderNo === selectedOrder.orderNo) || trackedOrders[0];
+    let centerX = w / 2;
+    let centerY = h / 2;
+
+    if (selVehForZoom && zoomScale > 1.0) {
+      const t = selVehForZoom.progress;
+      const sX = selVehForZoom.startX * w;
+      const sY = selVehForZoom.startY * h;
+      const cX = selVehForZoom.ctrlX * w;
+      const cY = selVehForZoom.ctrlY * h;
+      const tX = selVehForZoom.targetX * w;
+      const tY = selVehForZoom.targetY * h;
+
+      centerX = (1 - t) * (1 - t) * sX + 2 * (1 - t) * t * cX + t * t * tX;
+      centerY = (1 - t) * (1 - t) * sY + 2 * (1 - t) * t * cY + t * t * tY;
+    }
+
+    ctx.translate(w / 2, h / 2);
+    ctx.scale(zoomScale, zoomScale);
+    ctx.translate(-centerX, -centerY);
+
     // 1. Map Base Background
     if (mapStyle === "satellite") {
       ctx.fillStyle = "#1E293B";
-      ctx.fillRect(0, 0, w, h);
+      ctx.fillRect(-w, -h, w * 3, h * 3);
 
       ctx.fillStyle = "#0F172A";
       ctx.beginPath();
@@ -189,8 +265,8 @@ export default function Orders({ readOnly = false }) {
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
       }
     } else {
-      ctx.fillStyle = "#E0E7FF"; // Ocean light blue
-      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = "#E0E7FF";
+      ctx.fillRect(-w, -h, w * 3, h * 3);
 
       ctx.fillStyle = "#EDF2F7";
       ctx.beginPath();
@@ -200,7 +276,6 @@ export default function Orders({ readOnly = false }) {
       ctx.lineTo(0, h);
       ctx.fill();
 
-      // Main Road Network Lines
       ctx.strokeStyle = "#FCD34D";
       ctx.lineWidth = 4;
       ctx.beginPath();
@@ -245,7 +320,6 @@ export default function Orders({ readOnly = false }) {
       const tX = selVeh.targetX * w;
       const tY = selVeh.targetY * h;
 
-      // Full Planned Route Line (Dashed Blue Glow)
       ctx.beginPath();
       ctx.moveTo(sX, sY);
       ctx.quadraticCurveTo(cX, cY, tX, tY);
@@ -262,7 +336,6 @@ export default function Orders({ readOnly = false }) {
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Traversed Path Highlight (Green)
       const t = selVeh.progress;
       const subMidX = (1 - t / 2) * sX + (t / 2) * cX;
       const subMidY = (1 - t / 2) * sY + (t / 2) * cY;
@@ -277,7 +350,7 @@ export default function Orders({ readOnly = false }) {
       ctx.stroke();
     }
 
-    // 4. Render All Moving Vehicles (Continuous 60FPS Bezier Interpolation)
+    // 4. Render Moving Vehicles
     filteredOrders.slice(0, 18).forEach((o) => {
       const isSelected = o.orderNo === selectedOrder.orderNo;
       const t = o.progress;
@@ -289,18 +362,15 @@ export default function Orders({ readOnly = false }) {
       const tX = o.targetX * w;
       const tY = o.targetY * h;
 
-      // Calculate smooth quadratic Bezier position (x, y)
       const px = (1 - t) * (1 - t) * sX + 2 * (1 - t) * t * cX + t * t * tX;
       const py = (1 - t) * (1 - t) * sY + 2 * (1 - t) * t * cY + t * t * tY;
 
-      // Animated Pulse Ring behind moving truck
       const pulseSize = 16 + Math.sin(pulsePulseRef.current) * 6;
       ctx.beginPath();
       ctx.arc(px, py, pulseSize, 0, Math.PI * 2);
       ctx.fillStyle = isSelected ? "rgba(37, 99, 235, 0.25)" : "rgba(16, 185, 129, 0.2)";
       ctx.fill();
 
-      // Vehicle Pin Badge Pill (Exact match from reference screenshot)
       const badgeW = isSelected ? 130 : 108;
       const badgeH = isSelected ? 42 : 36;
       const badgeX = px - badgeW / 2;
@@ -320,16 +390,16 @@ export default function Orders({ readOnly = false }) {
 
       ctx.shadowBlur = 0;
 
-      // Icon & Order Title
       ctx.fillStyle = isSelected ? "#38BDF8" : "#0F172A";
       ctx.font = `bold ${isSelected ? "11.5px" : "10.5px"} sans-serif`;
       ctx.fillText(`🚚 Order #${o.orderNo}`, badgeX + 12, badgeY + (isSelected ? 16 : 14));
 
-      // Live Speed Text
       ctx.fillStyle = o.speed > 35 ? "#059669" : o.speed > 0 ? "#D97706" : "#DC2626";
       ctx.font = `bold ${isSelected ? "10.5px" : "9.5px"} sans-serif`;
       ctx.fillText(`${o.speed} km/h`, badgeX + 12, badgeY + (isSelected ? 32 : 27));
     });
+
+    ctx.restore();
   }
 
   return (
@@ -392,7 +462,10 @@ export default function Orders({ readOnly = false }) {
                 <div
                   key={o.id}
                   className={`order-card-item ${isSelected ? "active-selected" : ""}`}
-                  onClick={() => setSelectedOrderNo(o.orderNo)}
+                  onClick={() => {
+                    setSelectedOrderNo(o.orderNo);
+                    setDetailModalOrder(o);
+                  }}
                 >
                   <div className="card-header-line">
                     <span className="order-pill-badge">Order #{o.orderNo}</span>
@@ -405,9 +478,16 @@ export default function Orders({ readOnly = false }) {
                   <div className="card-route-loc">📍 {o.route}</div>
 
                   <div className="card-footer-action">
-                    <span className={`speed-text ${o.speed > 35 ? "fast" : o.speed > 0 ? "slow" : "stop"}`}>
-                      ⚡ {o.speed} km/h (Live GPS)
-                    </span>
+                    <button
+                      style={{ border: "none", background: "transparent", color: "#2563EB", fontWeight: 700, fontSize: 11.5, cursor: "pointer", padding: 0 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedOrderNo(o.orderNo);
+                        setDetailModalOrder(o);
+                      }}
+                    >
+                      🔎 View Shipment Details
+                    </button>
                     {!readOnly && o.status !== "Delivered" && (
                       <button
                         className="btn-advance-step"
@@ -445,24 +525,34 @@ export default function Orders({ readOnly = false }) {
             </button>
           </div>
 
-          {/* Zoom Overlay */}
+          {/* Interactive Zoom Controls Overlay (WORKING + and -) */}
           <div className="map-zoom-overlay">
-            <button onClick={() => setZoomLevel((z) => Math.min(5, z + 1))}>＋</button>
-            <button onClick={() => setZoomLevel((z) => Math.max(1, z - 1))}>－</button>
+            <button onClick={handleZoomIn} title="Zoom In (+)">＋</button>
+            <span style={{ fontSize: 10, fontWeight: 800, color: "#fff", background: "rgba(15,23,42,0.8)", padding: "2px 4px", borderRadius: 4, textAlign: "center" }}>
+              {Math.round(zoomScale * 100)}%
+            </span>
+            <button onClick={handleZoomOut} title="Zoom Out (-)">－</button>
+            {zoomScale !== 1.0 && (
+              <button onClick={handleResetZoom} title="Reset Zoom" style={{ fontSize: 10, height: 22, marginTop: 2 }}>
+                ↺
+              </button>
+            )}
           </div>
 
-          {/* Canvas Map View */}
+          {/* Canvas Map View with Click Collision Detection */}
           <canvas
             ref={canvasRef}
             width={780}
             height={580}
+            onClick={handleCanvasClick}
             className="orders-map-canvas"
+            title="Click any vehicle marker pin to view full shipment details!"
           />
 
           {/* Selected Order Summary Footer */}
-          <div className="map-selected-bar">
+          <div className="map-selected-bar" onClick={() => setDetailModalOrder(selectedOrder)} style={{ cursor: "pointer" }}>
             <div>
-              <div className="sel-title">🚚 Order #{selectedOrder.orderNo} ({selectedOrder.id}) · {selectedOrder.customer}</div>
+              <div className="sel-title">🚚 Order #{selectedOrder.orderNo} ({selectedOrder.id}) · {selectedOrder.customer} (Click for Full Details)</div>
               <div className="sel-sub">{selectedOrder.product} · {selectedOrder.route} · Driver: {selectedOrder.driver}</div>
             </div>
             <div style={{ textAlign: "right" }}>
@@ -474,6 +564,87 @@ export default function Orders({ readOnly = false }) {
         </div>
 
       </div>
+
+      {/* 📦 DETAILED SHIPMENT POPUP MODAL (Source, Destination, Product, Driver, Speed, GPS) */}
+      {detailModalOrder && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.75)", backdropFilter: "blur(6px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }} onClick={() => setDetailModalOrder(null)}>
+          <div style={{ background: "#FFFFFF", borderRadius: 20, width: "100%", maxWidth: 520, boxShadow: "0 25px 50px rgba(0,0,0,0.35)", overflow: "hidden", animation: "modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1)" }} onClick={(e) => e.stopPropagation()}>
+            
+            {/* Modal Header */}
+            <div style={{ padding: "18px 24px", background: "#0F172A", color: "#FFFFFF", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <div style={{ fontSize: 17, fontWeight: 800, color: "#38BDF8" }}>🚚 Live Shipment Telemetry Details</div>
+                <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2 }}>Order #{detailModalOrder.orderNo} · {detailModalOrder.id}</div>
+              </div>
+              <button onClick={() => setDetailModalOrder(null)} style={{ background: "none", border: "none", color: "#94A3B8", fontSize: 20, cursor: "pointer" }}>✕</button>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ padding: 24 }}>
+              
+              {/* Source ➔ Destination Banner */}
+              <div style={{ background: "#EFF6FF", border: "1px solid #BFDBFE", borderRadius: 14, padding: 16, marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#2563EB", textTransform: "uppercase" }}>🚩 SOURCE (ORIGIN)</div>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: "#0F172A", marginTop: 3 }}>{detailModalOrder.origin}</div>
+                </div>
+                <div style={{ fontSize: 20, color: "#2563EB", padding: "0 12px" }}>➔</div>
+                <div style={{ flex: 1, textAlign: "right" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#DC2626", textTransform: "uppercase" }}>🎯 DESTINATION</div>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: "#0F172A", marginTop: 3 }}>{detailModalOrder.dest}</div>
+                </div>
+              </div>
+
+              {/* Product & Customer Details */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 16 }}>
+                <div style={{ background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: 12, padding: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#64748B", textTransform: "uppercase" }}>📦 PRODUCT TRANSPORTED</div>
+                  <div style={{ fontSize: 13.5, fontWeight: 800, color: "#0F172A", marginTop: 4 }}>{detailModalOrder.product}</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "#2563EB", marginTop: 2 }}>{detailModalOrder.qty.toLocaleString()} Units Loaded</div>
+                </div>
+
+                <div style={{ background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: 12, padding: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#64748B", textTransform: "uppercase" }}>🏢 CUSTOMER</div>
+                  <div style={{ fontSize: 13.5, fontWeight: 800, color: "#0F172A", marginTop: 4 }}>{detailModalOrder.customer}</div>
+                  <div style={{ fontSize: 11.5, color: "#64748B", marginTop: 2 }}>Status: <span className={`badge ${STATUS_TONE[detailModalOrder.status]}`}>{detailModalOrder.status}</span></div>
+                </div>
+              </div>
+
+              {/* Driver & Telemetry Specs */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 20 }}>
+                <div style={{ background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: 12, padding: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#64748B", textTransform: "uppercase" }}>👤 DRIVER &amp; TRUCK</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#0F172A", marginTop: 4 }}>{detailModalOrder.driver}</div>
+                  <div style={{ fontSize: 11.5, color: "#475569", marginTop: 2 }}>🚚 Reg: <b>{detailModalOrder.truckNo}</b></div>
+                  <div style={{ fontSize: 11.5, color: "#2563EB", fontWeight: 600, marginTop: 2 }}>📞 {detailModalOrder.phone}</div>
+                </div>
+
+                <div style={{ background: "#ECFDF5", border: "1px solid #A7F3D0", borderRadius: 12, padding: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#047857", textTransform: "uppercase" }}>⚡ LIVE TELEMETRY</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: "#059669", marginTop: 4 }}>{detailModalOrder.speed} km/h</div>
+                  <div style={{ fontSize: 11, color: "#047857", marginTop: 2 }}>GPS: {detailModalOrder.lat}° N, {detailModalOrder.lng}° E</div>
+                  <div style={{ fontSize: 10.5, color: "#059669", fontWeight: 600, marginTop: 2 }}>🟢 Active Signal</div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
+                <button onClick={() => setDetailModalOrder(null)} className="btn btn-outline" style={{ padding: "9px 18px", fontSize: 12.5 }}>Close</button>
+                <button
+                  onClick={() => alert(`Calling Driver ${detailModalOrder.driver} at ${detailModalOrder.phone}...`)}
+                  className="btn btn-primary"
+                  style={{ padding: "9px 20px", background: "#2563EB", color: "#FFF", fontSize: 12.5, fontWeight: 700, border: "none", borderRadius: 8, cursor: "pointer" }}
+                >
+                  📞 Call Driver ({detailModalOrder.driver})
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

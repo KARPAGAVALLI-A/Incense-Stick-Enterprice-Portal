@@ -7,7 +7,7 @@ import "./Orders.css";
 const STATUS_STEPS = ["Placed", "Processing", "Shipped", "Delivered"];
 const STATUS_TONE = { Placed: "badge-blue", Processing: "badge-amber", Shipped: "badge-blue", Delivered: "badge-green" };
 
-// 50 Active Tracked Vehicles & Customer Orders
+// 50 Active Tracked Vehicles with Real Highway Bezier Routes across Tamil Nadu & South India
 const SEED_TRACKED_ORDERS = Array.from({ length: 50 }).map((_, i) => {
   const drivers = ["Shanmugam", "Kani", "Suresh Gopi", "Samy", "Muthu Kumar", "Selvakumar", "Ravi Chandran", "Venkatesh", "Anbarasu", "Saravanan"];
   const customers = ["Sri Balaji Traders", "Devi Exports", "Annapoorna Pooja Store", "Meenakshi Agencies", "Murugan Stores", "Kavitha Enterprises", "Senthil & Co", "Vasantham Traders"];
@@ -21,11 +21,17 @@ const SEED_TRACKED_ORDERS = Array.from({ length: 50 }).map((_, i) => {
   const product = products[i % products.length];
   const origin = cities[i % cities.length];
   const dest = cities[(i + 3) % cities.length];
-  const speed = Math.floor(18 + (i * 7) % 55);
+  const speed = Math.floor(35 + (i * 7) % 35);
   const statusStep = i % 4 === 3 ? "Delivered" : i % 3 === 2 ? "Shipped" : i % 2 === 1 ? "Processing" : "Placed";
 
-  const lat = 8.8 + ((i * 1.37) % 4.5);
-  const lng = 76.8 + ((i * 1.83) % 3.4);
+  // Route Waypoints (Normalized 0 to 1 map coordinates)
+  // Salem (0.38, 0.42), Chennai (0.62, 0.18), Madurai (0.40, 0.65), Kovilpatti (0.42, 0.74), Bangalore (0.35, 0.30)
+  const startX = 0.38;
+  const startY = 0.42;
+  const targetX = 0.22 + ((i * 0.041) % 0.48);
+  const targetY = 0.16 + ((i * 0.054) % 0.70);
+  const ctrlX = (startX + targetX) / 2 + (i % 2 === 0 ? 0.08 : -0.06);
+  const ctrlY = (startY + targetY) / 2 - (i % 2 === 0 ? 0.06 : 0.08);
 
   return {
     orderNo: idNum,
@@ -39,9 +45,17 @@ const SEED_TRACKED_ORDERS = Array.from({ length: 50 }).map((_, i) => {
     dest,
     route: `${origin} ➔ ${dest}`,
     speed,
+    baseSpeed: speed,
     status: statusStep,
-    lat: lat.toFixed(4),
-    lng: lng.toFixed(4)
+    progress: (i * 0.07) % 0.9, // starting progress along route [0, 1]
+    startX,
+    startY,
+    ctrlX,
+    ctrlY,
+    targetX,
+    targetY,
+    lat: (8.8 + ((i * 1.37) % 4.5)).toFixed(4),
+    lng: (76.8 + ((i * 1.83) % 3.4)).toFixed(4)
   };
 });
 
@@ -53,10 +67,13 @@ export default function Orders({ readOnly = false }) {
   const [trackedOrders, setTrackedOrders] = useState(SEED_TRACKED_ORDERS);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOrderNo, setSelectedOrderNo] = useState(1);
-  const [mapStyle, setMapStyle] = useState("street"); // 'street' or 'satellite'
+  const [mapStyle, setMapStyle] = useState("street");
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [isLiveMoving, setIsLiveMoving] = useState(true);
 
   const canvasRef = useRef(null);
+  const animFrameIdRef = useRef(null);
+  const pulsePulseRef = useRef(0);
 
   // Filter orders by search input
   const filteredOrders = useMemo(() => {
@@ -77,24 +94,11 @@ export default function Orders({ readOnly = false }) {
     return trackedOrders.find((o) => o.orderNo === selectedOrderNo) || trackedOrders[0];
   }, [trackedOrders, selectedOrderNo]);
 
-  // Live truck speed animation timer
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTrackedOrders((prev) =>
-        prev.map((o) => {
-          if (o.status === "Delivered") return { ...o, speed: 0 };
-          return { ...o, speed: Math.max(12, Math.floor(18 + Math.random() * 45)) };
-        })
-      );
-    }, 2000);
-    return () => clearInterval(timer);
-  }, []);
-
   function advanceStatus(o) {
     const idx = STATUS_STEPS.indexOf(o.status);
     if (idx >= STATUS_STEPS.length - 1) return;
     const next = STATUS_STEPS[idx + 1];
-    
+
     setTrackedOrders((prev) =>
       prev.map((item) => (item.id === o.id ? { ...item, status: next } : item))
     );
@@ -103,8 +107,58 @@ export default function Orders({ readOnly = false }) {
     push("admin", `Order ${o.id} Updated`, `${o.customer}'s order is now "${next}".`);
   }
 
-  // Draw Interactive Map Canvas (Street vs Satellite Hybrid)
+  // 60 FPS Real-time Continuous Vehicle GPS Movement Loop
   useEffect(() => {
+    let lastTime = performance.now();
+
+    const animateLoop = (now) => {
+      const delta = (now - lastTime) / 1000;
+      lastTime = now;
+
+      pulsePulseRef.current = (pulsePulseRef.current + delta * 3) % (Math.PI * 2);
+
+      if (isLiveMoving) {
+        setTrackedOrders((prevOrders) =>
+          prevOrders.map((o) => {
+            if (o.status === "Delivered") return { ...o, speed: 0 };
+
+            // Advance progress continuously along Bezier path
+            let speedFactor = o.baseSpeed / 3600; // normalized speed
+            let newProgress = o.progress + speedFactor * delta * 4;
+
+            if (newProgress >= 0.98) {
+              newProgress = 0.02; // Loop back to start
+            }
+
+            // Calculate live lat/lng changes smoothly
+            const curLat = (8.8 + newProgress * 3.8 + (o.orderNo % 3) * 0.2).toFixed(4);
+            const curLng = (76.8 + newProgress * 2.9 + (o.orderNo % 2) * 0.3).toFixed(4);
+
+            return {
+              ...o,
+              progress: newProgress,
+              speed: Math.floor(o.baseSpeed + Math.sin(now / 500 + o.orderNo) * 4),
+              lat: curLat,
+              lng: curLng
+            };
+          })
+        );
+      }
+
+      // Render Canvas
+      renderMapCanvas();
+      animFrameIdRef.current = requestAnimationFrame(animateLoop);
+    };
+
+    animFrameIdRef.current = requestAnimationFrame(animateLoop);
+
+    return () => {
+      if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
+    };
+  }, [isLiveMoving, mapStyle, selectedOrderNo, filteredOrders]);
+
+  // Render Canvas with Smooth Moving Vehicles
+  function renderMapCanvas() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -113,9 +167,9 @@ export default function Orders({ readOnly = false }) {
 
     ctx.clearRect(0, 0, w, h);
 
-    // 1. Draw Map Background
+    // 1. Map Base Background
     if (mapStyle === "satellite") {
-      ctx.fillStyle = "#1E293B"; // Dark Satellite Ocean
+      ctx.fillStyle = "#1E293B";
       ctx.fillRect(0, 0, w, h);
 
       ctx.fillStyle = "#0F172A";
@@ -135,7 +189,7 @@ export default function Orders({ readOnly = false }) {
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
       }
     } else {
-      ctx.fillStyle = "#E0E7FF"; // Light ocean
+      ctx.fillStyle = "#E0E7FF"; // Ocean light blue
       ctx.fillRect(0, 0, w, h);
 
       ctx.fillStyle = "#EDF2F7";
@@ -146,7 +200,7 @@ export default function Orders({ readOnly = false }) {
       ctx.lineTo(0, h);
       ctx.fill();
 
-      // Highways
+      // Main Road Network Lines
       ctx.strokeStyle = "#FCD34D";
       ctx.lineWidth = 4;
       ctx.beginPath();
@@ -163,7 +217,7 @@ export default function Orders({ readOnly = false }) {
       ctx.stroke();
     }
 
-    // 2. City Labels
+    // 2. Tamil Nadu City Labels
     const MAP_CITIES = [
       { name: "Chennai Port", x: w * 0.62, y: h * 0.18 },
       { name: "Salem Factory Depot", x: w * 0.38, y: h * 0.42 },
@@ -181,67 +235,124 @@ export default function Orders({ readOnly = false }) {
       ctx.fillText(`📍 ${c.name}`, c.x, c.y);
     });
 
-    // 3. Highlight Selected Route Line
-    const selIdx = trackedOrders.findIndex((o) => o.orderNo === selectedOrder.orderNo);
-    const startX = w * 0.38;
-    const startY = h * 0.42;
-    const targetX = w * (0.2 + ((selIdx * 0.08) % 0.45));
-    const targetY = h * (0.2 + ((selIdx * 0.11) % 0.65));
+    // 3. Highlight Route Line & Moving Marker for Selected Vehicle
+    const selVeh = trackedOrders.find((o) => o.orderNo === selectedOrder.orderNo) || trackedOrders[0];
+    if (selVeh) {
+      const sX = selVeh.startX * w;
+      const sY = selVeh.startY * h;
+      const cX = selVeh.ctrlX * w;
+      const cY = selVeh.ctrlY * h;
+      const tX = selVeh.targetX * w;
+      const tY = selVeh.targetY * h;
 
-    ctx.beginPath();
-    ctx.moveTo(startX, startY);
-    ctx.quadraticCurveTo((startX + targetX) / 2 + 30, (startY + targetY) / 2 - 20, targetX, targetY);
-    ctx.strokeStyle = "#3B82F6";
-    ctx.lineWidth = 5;
-    ctx.stroke();
+      // Full Planned Route Line (Dashed Blue Glow)
+      ctx.beginPath();
+      ctx.moveTo(sX, sY);
+      ctx.quadraticCurveTo(cX, cY, tX, tY);
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+      ctx.lineWidth = 6;
+      ctx.stroke();
 
-    // 4. Render Floating Pin Badges (Matching reference UI screenshot)
-    filteredOrders.slice(0, 16).forEach((o) => {
+      ctx.beginPath();
+      ctx.setLineDash([8, 6]);
+      ctx.moveTo(sX, sY);
+      ctx.quadraticCurveTo(cX, cY, tX, tY);
+      ctx.strokeStyle = "#3B82F6";
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Traversed Path Highlight (Green)
+      const t = selVeh.progress;
+      const subMidX = (1 - t / 2) * sX + (t / 2) * cX;
+      const subMidY = (1 - t / 2) * sY + (t / 2) * cY;
+      const curX = (1 - t) * (1 - t) * sX + 2 * (1 - t) * t * cX + t * t * tX;
+      const curY = (1 - t) * (1 - t) * sY + 2 * (1 - t) * t * cY + t * t * tY;
+
+      ctx.beginPath();
+      ctx.moveTo(sX, sY);
+      ctx.quadraticCurveTo(subMidX, subMidY, curX, curY);
+      ctx.strokeStyle = "#10B981";
+      ctx.lineWidth = 5;
+      ctx.stroke();
+    }
+
+    // 4. Render All Moving Vehicles (Continuous 60FPS Bezier Interpolation)
+    filteredOrders.slice(0, 18).forEach((o) => {
       const isSelected = o.orderNo === selectedOrder.orderNo;
-      const oIdx = o.orderNo;
+      const t = o.progress;
 
-      const px = w * (0.22 + ((oIdx * 0.038) % 0.48));
-      const py = h * (0.15 + ((oIdx * 0.052) % 0.72));
+      const sX = o.startX * w;
+      const sY = o.startY * h;
+      const cX = o.ctrlX * w;
+      const cY = o.ctrlY * h;
+      const tX = o.targetX * w;
+      const tY = o.targetY * h;
 
-      const badgeW = isSelected ? 128 : 108;
+      // Calculate smooth quadratic Bezier position (x, y)
+      const px = (1 - t) * (1 - t) * sX + 2 * (1 - t) * t * cX + t * t * tX;
+      const py = (1 - t) * (1 - t) * sY + 2 * (1 - t) * t * cY + t * t * tY;
+
+      // Animated Pulse Ring behind moving truck
+      const pulseSize = 16 + Math.sin(pulsePulseRef.current) * 6;
+      ctx.beginPath();
+      ctx.arc(px, py, pulseSize, 0, Math.PI * 2);
+      ctx.fillStyle = isSelected ? "rgba(37, 99, 235, 0.25)" : "rgba(16, 185, 129, 0.2)";
+      ctx.fill();
+
+      // Vehicle Pin Badge Pill (Exact match from reference screenshot)
+      const badgeW = isSelected ? 130 : 108;
       const badgeH = isSelected ? 42 : 36;
       const badgeX = px - badgeW / 2;
       const badgeY = py - badgeH / 2;
 
-      ctx.shadowColor = isSelected ? "#2563EB" : "rgba(0,0,0,0.2)";
-      ctx.shadowBlur = isSelected ? 16 : 6;
+      ctx.shadowColor = isSelected ? "#2563EB" : "rgba(0,0,0,0.25)";
+      ctx.shadowBlur = isSelected ? 18 : 6;
 
       ctx.fillStyle = isSelected ? "#0F172A" : "#FFFFFF";
       ctx.beginPath();
       ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 18);
       ctx.fill();
 
-      ctx.strokeStyle = isSelected ? "#3B82F6" : "#059669";
+      ctx.strokeStyle = isSelected ? "#38BDF8" : "#059669";
       ctx.lineWidth = isSelected ? 2.5 : 1.5;
       ctx.stroke();
 
       ctx.shadowBlur = 0;
 
+      // Icon & Order Title
       ctx.fillStyle = isSelected ? "#38BDF8" : "#0F172A";
       ctx.font = `bold ${isSelected ? "11.5px" : "10.5px"} sans-serif`;
       ctx.fillText(`🚚 Order #${o.orderNo}`, badgeX + 12, badgeY + (isSelected ? 16 : 14));
 
+      // Live Speed Text
       ctx.fillStyle = o.speed > 35 ? "#059669" : o.speed > 0 ? "#D97706" : "#DC2626";
       ctx.font = `bold ${isSelected ? "10.5px" : "9.5px"} sans-serif`;
       ctx.fillText(`${o.speed} km/h`, badgeX + 12, badgeY + (isSelected ? 32 : 27));
     });
-
-  }, [filteredOrders, selectedOrder, mapStyle, zoomLevel]);
+  }
 
   return (
     <div className="orders-split-page">
       {/* Header Bar */}
       <div className="orders-header-row">
         <div>
-          <h1 className="orders-main-title">🚚 {t("orders")} — Live GPS Tracking</h1>
+          <h1 className="orders-main-title">🚚 {t("orders")} — Live GPS Navigation &amp; Fleet Tracking</h1>
           <p className="orders-sub-title">
-            Real-time GPS vehicle tracking, customer order status &amp; route telemetry · 50 Active Shipments
+            Continuous 60 FPS real-time GPS movement, road route navigation &amp; telemetry · 50 Active Vehicles
           </p>
+        </div>
+        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <button
+            onClick={() => setIsLiveMoving(!isLiveMoving)}
+            style={{
+              padding: "8px 16px", borderRadius: 10, border: "none",
+              background: isLiveMoving ? "#10B981" : "#64748B", color: "#FFF",
+              fontSize: 12.5, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 6
+            }}
+          >
+            {isLiveMoving ? "🟢 Live 60FPS GPS Moving" : "⏸ Paused"}
+          </button>
         </div>
       </div>
 
@@ -267,7 +378,7 @@ export default function Orders({ readOnly = false }) {
           <div className="orders-count-bar">
             <span>Found {filteredOrders.length} Vehicles</span>
             <span className="live-pill">
-              <span className="pulse-dot" /> 44 Moving Live
+              <span className="pulse-dot" /> 44 Moving Live (Real-Time)
             </span>
           </div>
 
@@ -295,7 +406,7 @@ export default function Orders({ readOnly = false }) {
 
                   <div className="card-footer-action">
                     <span className={`speed-text ${o.speed > 35 ? "fast" : o.speed > 0 ? "slow" : "stop"}`}>
-                      ⚡ {o.speed} km/h
+                      ⚡ {o.speed} km/h (Live GPS)
                     </span>
                     {!readOnly && o.status !== "Delivered" && (
                       <button
@@ -315,7 +426,7 @@ export default function Orders({ readOnly = false }) {
           </div>
         </div>
 
-        {/* RIGHT PANEL: Interactive GPS Map View */}
+        {/* RIGHT PANEL: Interactive GPS Map View with Smooth Live Movement */}
         <div className="orders-right-map-panel">
           
           {/* Map Layer Style Toggles */}
@@ -356,7 +467,7 @@ export default function Orders({ readOnly = false }) {
             </div>
             <div style={{ textAlign: "right" }}>
               <div className="sel-speed">⚡ {selectedOrder.speed} km/h</div>
-              <div className="sel-coords">GPS: {selectedOrder.lat}° N, {selectedOrder.lng}° E</div>
+              <div className="sel-coords">Live GPS: {selectedOrder.lat}° N, {selectedOrder.lng}° E</div>
             </div>
           </div>
 
